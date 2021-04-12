@@ -57,18 +57,19 @@ int main(int argc, char **argv)
 				if(id-1 != j){
 					close(fdPipe[j][0]);
 				}
-				if(id != s){
+				
+			}
+			if(id != s){
 					close(fdPipe[n][1]);
 					close(fdPipe[n][0]);
 				}
-			}
-
+			
 			//exit(0);
 			i=n+1;
 		}else{		
 			pid[i-1] = pid_child;
-			close(fdPipe[i-1][1]);
-			close(fdPipe[i-1][0]);
+			//close(fdPipe[i-1][1]);
+			//close(fdPipe[i-1][0]);
 			i = i+1;
 		}
 	}
@@ -85,9 +86,13 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 
+			printf("se leyò %i del padre \n", buffer[0]);
+
 			srand(time(NULL));
-			int num_secreto = rand()%99 +1;
+			int num_secreto = rand()%10 +1;
 			resultado = num_secreto -1;
+
+			printf("nùmero secreto es %i \n", num_secreto);
 
 			while(resultado < num_secreto){
 				resultado = buffer[0] + 1;
@@ -97,6 +102,8 @@ int main(int argc, char **argv)
 					perror("");
 					exit(1);
 				}
+
+				printf("se le pasò %i al proceso %i \n", resultado, (id%n)+1);
 
 				if (read(fdPipe[id-1][0], buffer, sizeof(int)) <= 0) {
 					fprintf(stderr, "read[%d]", fdPipe[id-1][0]);
@@ -123,6 +130,7 @@ int main(int argc, char **argv)
 					//exit(1);
 				}
 
+				printf("yo, %i, recibì %i \n", id, resultado);
 				resultado = buffer[0] + 1;
 
 				if (write(fdPipe[id%n][1], &resultado, sizeof(int)) <= 0) {
@@ -130,6 +138,8 @@ int main(int argc, char **argv)
 					perror("");
 					exit(1);
 				}
+
+				printf("%i le pasò %i al proceso %i \n", id, resultado, (id%n)+1);
 			}
 		}
 	}else{
@@ -151,7 +161,7 @@ int main(int argc, char **argv)
 
 
 
-	if(id != 0){
+	/*if(id != 0){
 		close(fdPipe[id%n][1]);
 		close(fdPipe[id-1][0]);
 	}//else{
@@ -163,7 +173,19 @@ int main(int argc, char **argv)
 		close(fdPipe[n][1]);
 		close(fdPipe[n][0]);
 	}
-	
+	*/
+	for(int i = 0; i<n+1; i++){
+		close(fdPipe[i][1]);
+		close(fdPipe[i][0]);
+	}
+
+	if(id == 0){
+		int* bleh;
+		for(int i=0; i<n; i++){
+			waitpid(pid[i],  bleh, 0);
+		}
+	}
+
 	printf("proceso %i, me voy \n", id);
     /* COMPLETAR */
 }
