@@ -115,18 +115,21 @@ int main(int argc, char **argv)
 
 		}else{
 			//HAY QUE PONER WHILE + HACER BIEN QUE CUANDO EL READ DA 0 SE VAYA DEL WHILE Y CIERRE
-			if (read(fdPipe[id-1][0], buffer, sizeof(int)) <= 0) {
-				fprintf(stderr, "read[%d]", fdPipe[id-1][0]);
-				perror("");
-				exit(1);
-			}
+			while(1){
+				if (read(fdPipe[id-1][0], buffer, sizeof(int)) <= 0) {
+					fprintf(stderr, "read[%d]", fdPipe[id-1][0]);
+					perror("");
+					break;
+					//exit(1);
+				}
 
-			resultado = buffer[0] + 1;
+				resultado = buffer[0] + 1;
 
-			if (write(fdPipe[id%n][1], &resultado, sizeof(int)) <= 0) {
-				fprintf(stderr, "write[%d]", fdPipe[id%n][1]);
-				perror("");
-				exit(1);
+				if (write(fdPipe[id%n][1], &resultado, sizeof(int)) <= 0) {
+					fprintf(stderr, "write[%d]", fdPipe[id%n][1]);
+					perror("");
+					exit(1);
+				}
 			}
 		}
 	}else{
