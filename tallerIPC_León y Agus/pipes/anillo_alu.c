@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	
   	/* COMPLETAR */
 	
-	sscanf (argv[1],"%d",&n);
+	sscanf (argv[1],"%d",&n); //probar usar atoi para ver si cambia el comportamiento
 	sscanf (argv[2],"%d",&c);
 	sscanf (argv[3],"%d",&s);
 

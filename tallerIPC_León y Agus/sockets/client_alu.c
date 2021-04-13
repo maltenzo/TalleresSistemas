@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 
 	//COMPLETAR: conectar el socket
 	
-	int len = sizeof(name); //+ sizeof(name.sin_family);
+	int len = sizeof(name);// + sizeof(name.sin_family);
 	if (connect(s, (struct sockaddr_in*) &name, len) == -1) {
         perror("connect");
         exit(1);
@@ -50,6 +50,8 @@ int main(int argc, char **argv){
 	recv(s, bufrecv, MSGLEN, 0);
 
 	printf("Bienvenida: %s\n",bufrecv);
+
+	
 
 	for (;;) {
 		printf("[%s]> ", argv[1]);
@@ -64,8 +66,19 @@ int main(int argc, char **argv){
 			break;
 		}
 		//COMPLETAR: Enviar el mensaje
-
-		//COMPLETAR: ecibir mensajes hasta que envie  CMDSE
+		send(s, bufsend, MSGLEN, 0);
+		//COMPLETAR: recibir mensajes hasta que envie  CMDSEP
+		while (1)
+		{
+			w = recv(s, bufrecv, MSGLEN, 0);
+			if(strncmp(bufrecv, CMDSEP, w) == 0){
+				break;
+			}
+			bufrecv[w] = '\0'; //con esto decimos fin de string
+			printf("[[%s]]> %s",argv[1], bufrecv);
+			
+		}
+		
 	}
 
 	free(bufsend);
