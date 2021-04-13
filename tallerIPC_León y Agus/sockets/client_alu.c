@@ -7,6 +7,8 @@
 
 #include "config.h"
 
+#define SOCK_PATH "echo_socket";
+
 int main(int argc, char **argv){
 	char bufrecv[MSGLEN + 1], *bufsend, *p;
 	struct sockaddr_in name;
@@ -37,9 +39,15 @@ int main(int argc, char **argv){
 	name.sin_port = htons(PORT);
 
 	//COMPLETAR: conectar el socket
-
-
+	
+	int len = sizeof(name); //+ sizeof(name.sin_family);
+	if (connect(s, (struct sockaddr_in*) &name, len) == -1) {
+        perror("connect");
+        exit(1);
+    }
 	//COMPLETAR: Recibir mensaje de bienvenida y ponerlo en bufrecv
+
+	recv(s, bufrecv, MSGLEN, 0);
 
 	printf("Bienvenida: %s\n",bufrecv);
 
