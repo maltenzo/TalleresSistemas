@@ -1,0 +1,69 @@
+a) 
+    
+void main(){
+    int msg = 0
+    pid_t padre = get_current_pid();
+    pid_t hijo = fork();
+
+    if(hijo == 0){
+        
+        while(true){
+            msg = brecieve(padre);
+
+            bsend(padre, msg + 1);
+        }
+    } else{
+        bsend(hijo, msg);
+
+        while(true){
+            msg = brecieve(hijo);
+
+            bsend(hijo, msg + 1);
+        }
+    }
+}
+
+b) 
+
+void main(){
+    int msg = 0
+    pid_t padre = get_current_pid();
+    pid_t hijo1;
+    pid_t hijo2;
+
+    pid_t hijo1Aux = fork();
+    
+    share_mem(hijo1);
+    share_mem(hijo2);
+
+    if(hijo1Aux == 0){
+        hijo1 = get_current_pid() 
+        while(true){
+            msg = brecieve(padre);
+
+            bsend(hijo2, msg + 1);
+        }
+    } else{
+        pid_t hijo2Aux = fork();
+
+        if(hijo2Aux == 0){
+            hijo2 = get_current_pid();
+
+            while(true){
+                msg = brecieve(hijo1);
+
+                bsend(padre, msg + 1);
+            }
+
+        }else{
+
+            bsend(hijo1, msg);
+
+            while(true){
+                msg = brecieve(hijo2);
+
+                bsend(hijo1, msg + 1);
+            }
+        }
+    }
+}

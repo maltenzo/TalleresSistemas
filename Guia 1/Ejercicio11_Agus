@@ -1,0 +1,32 @@
+a)
+
+int result;
+
+void proceso_izquierda(){
+    result = 0;
+    while(true) {
+        if (!send(pid_derecha, &result)){
+            bool sent = false;
+            while(!sent){
+                sent = send(pid_derecha, &result);
+            }
+        }
+        recult = computo_muy_dificil_1();
+    }
+}
+
+void proceso_derecha(){
+    while(true){
+        result = computo_muy_dificil_2();
+        int* left_result;
+        if(!recieve(pid_izquierda, left_result)){
+            bool recieved = false;
+            while(!recieved){
+                recieved = recieve(pid_izquierda, left_result)
+            }
+        }
+        prinf(" %s %s", &left_result, result)
+    }
+}
+
+b) Con una capacidad de 1 creo que basta.

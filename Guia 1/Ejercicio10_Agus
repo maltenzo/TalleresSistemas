@@ -1,0 +1,3 @@
+a) Memoria compartida. Para poder tener acceso concurrente a la imagen.
+b) Pasaje de mensajes. Ya que la comunicación ocurre en un momento determinado.
+c) Pasaje de mensajes?

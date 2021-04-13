@@ -1,0 +1,18 @@
+a) La secuencia no es realizable en el sistema operativo descripto ya que el proceso 1 debe
+esperar a que el proceso 2 reciba el mensaje antes de poder ejecutar el computo 1, y esto no ocurre
+hasta que el proceso 2 no haya terminado de ejecutar el calculo 2.
+
+Entonces una secuencia posible podria ser:
+
+| TIEMPO | PROCESADOR 1 | PROCESADOR 2 |
+|   1    | sendPendiente| computo 2    |
+|   2    | computo 1    | computo 2    |
+|   3    | computo 1    | computo 2    |
+
+Si cada tiempo es lo que se tarda en ejecutar uno de los calculos costosos, entonces solo el primer
+send deberá esperar a que finalice el primer calculo 2, luego se ejecutan ambos calculos en paralelo
+y el envío y recepcion se producen casi al mismo tiempo.
+
+b)
+Se podría aumentar la capacidad de la cola de mensajes y que el envio no sea bloqueante.
+
