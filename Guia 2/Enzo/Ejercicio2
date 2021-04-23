@@ -1,0 +1,8 @@
+p0  quantum= poco prioridad= alta
+p1  quantum= poco prioridad= baja
+p2  quantum= mucho prioridad= alta
+
+b)
+p0) un programa que hace sleep un perdiodo de tiempo y luego escribe en una unidad extraible?
+p1) un programa que se comunique con un servidor en red que sea lento para responder (tal vez este con mucha demanda?)?
+p2) un programa que "resuleva" tsp para instancias grandes y escriba las respuestas a disco

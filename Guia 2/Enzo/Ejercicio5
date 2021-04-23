@@ -1,0 +1,5 @@
+a) un mismo proceso puede estar encolado varias veces en la lista de procesos ready
+
+b) cada proceso podria conseguir mas quantum del que originalmente le toca pero esto aumenta los tiempos de espera de los otros procesos. ademas que si un proceso se bloquea hay que pagar tiempo para sacar a sus repeticiones de la lista de ready
+
+c) aumentar el quantum es una solucion similar, incluso se podria tener una estructura que nos permita guardar una cantidad de cuantum por proceso si no quieren todos tener mas de lo pre establecido

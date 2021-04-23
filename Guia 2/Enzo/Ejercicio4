@@ -1,0 +1,2 @@
+b) si las prioridades son fijas aquellos con poca prioridad podrian nunca ejecutarse si siguen entrando procesos con alta prioridad
+c) analogo al b asiendo una equivalencia entre prioridad y duracion del trabajo
