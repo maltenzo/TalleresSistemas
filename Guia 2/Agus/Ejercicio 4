@@ -1,0 +1,5 @@
+Por prioridad, si no se cambian las prioridades en ningun momento y no paran de llegar procesos con alta prioridad,
+los procesos de prioridad mas baja podrian no acceder al procesador nunca.
+
+SJF, si llegan continuamente procesos de corta duracion
+

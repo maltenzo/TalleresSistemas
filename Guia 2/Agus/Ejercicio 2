@@ -1,0 +1,1 @@
+a) P2 debería tener mucho quantum y alta prioridad para que llegue lo antes posible a la ráfaga de escritura en disco, ya que es muy lenta.

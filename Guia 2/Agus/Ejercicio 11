@@ -1,0 +1,3 @@
+d) En primer lugar, SRTF no es utilizable en contextos en los que se desconoce el tiempo de ejecucion de los procesos.
+Luego, aunque se conocieran los tiempos de ejecucion, si continuan llegando procesos de corta duración, aquellos de larga duración
+no tendrían al procesador nunca, produciendose starvation. En esos casos podría utilizarse el waiting time o fairness com métrica.

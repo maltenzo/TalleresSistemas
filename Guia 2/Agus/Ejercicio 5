@@ -1,0 +1,3 @@
+a) Aquel proceso que esté encolado más veces tendría más tiempo running que el resto de los procesos.
+b) De este modo se podrían aplicar prioridades y quantum distintos a cada proceso, pero se estaría ocupando mucho más espacio en la cola.
+c) Se podría establecer un campo en la cola que indique el tamaño del quantum que debe darse a cada proceso.
