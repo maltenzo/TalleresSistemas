@@ -1,0 +1,13 @@
+wt1:16
+wt2:21
+wt3:3
+Promedio = 13.3 (El tiempo de bloqueo no cuenta para le waiting time)
+
+
+El turnaround es el tiempo total hasta que se termina la ejecucion
+ta1:32
+ta2:34
+ta3:6
+Promedio = 24 (aca si cuenta el bloqueado)
+
+Creeria que es round robin porque el scheduler corta un proceso en ejecucion sin que este le ceda el control. y esto se sigue viendo a lo largo de la ejecucion de los procesos
