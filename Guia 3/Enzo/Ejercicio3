@@ -1,0 +1,1 @@
+Probablemente si, deberia estar especificado tambien que el mutex se utiliza al escribir en la variable compartida, no solo al leerla
