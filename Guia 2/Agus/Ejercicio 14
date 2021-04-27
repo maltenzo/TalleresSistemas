@@ -1,0 +1,7 @@
+a)Cada proceso debe tener asignada una prioridad, donde los procesos de alarma tengan la prioridad más alta, los procesos interactivos tengan la que sigue, y el resto de los procesos
+estan por debajo. El scheduler debe ser preemtive, ya que es necesario que se active cada vez que se inicia un proceso nuevo y, de ser un proceso de mayor prioridad que el actual,
+realizar inmediatamente un cambio de contexto. Una política de planificion posible es multiples colas, en las que cada cola corresponda a un nivel de prioridad, dentro de cada cola se
+se puede utilizar round robin con un quantum no muy grande para que vayan rotando los procesos. Las prioridades deben cambiar si un proceso lleva demasiado tiempo esperando, pero 
+jamás deben obtener el nivel más alto, éste está reservado unicamente para las alarmas.
+
+ 

@@ -1,0 +1,2 @@
+Se favorecería a los intensivos en E/S porque son los que menos tiempo pasan procesando y más tiempo bloqueados, y es por esto que no dejaría a los que usan mas procesador en starvation,
+ya que se bloquearían los de E/S quedando en ready sólo los que usan el procesador.
