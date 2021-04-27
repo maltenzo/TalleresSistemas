@@ -1,0 +1,3 @@
+Podría suceder que un proceso llame a wait() y que justo antes de ejecutar dormir() se acabe el quantum, haya un cambio de contexto, y otro proceso ejecute un signal() sobre el mismo
+semáforo, que estaba en 0, hace s++ y despierta a algún dormido, luego se retoma el wait() anterior, se ejecuta dormir() a pesar de que el semáforo ahora es 1 y nunca recibe la señal 
+para despertar.

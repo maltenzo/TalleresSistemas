@@ -1,0 +1,3 @@
+a) Si, si foo() ejecuta semWait(S) y bar() ejecuta semWait(R) se produce deadlock.
+
+b)Si, si foo() toma los semaforos sin interrupción luego de hacer semSignal(R).

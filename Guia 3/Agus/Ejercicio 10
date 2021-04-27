@@ -1,0 +1,148 @@
+1) 
+
+
+semaforo semA = 0;
+semaforo semB = 0;
+semaforo semC = 1;
+
+
+procesoA(){
+
+    wait(semC);
+
+
+    signal(semA);
+
+}
+
+procesoB(){
+
+    wait(semA);
+
+
+    signal(semB);
+
+}
+
+procesoC(){
+
+    wait(semB);
+
+
+    signal(semC);
+
+}
+
+Ni bien se termina de ejecutar un proceso, habilita la ejecución del siguiente.
+
+
+2)
+
+semaforo semA = 0;
+semaforo semB = 2;
+semaforo semC = 0;
+
+
+procesoA(){
+
+    wait(semC);
+
+
+    signal(semA);
+    signal(semA);
+
+}
+
+procesoB(){
+
+    wait(semA);
+
+
+    signal(semB);
+
+}
+
+procesoC(){
+
+    wait(semB);
+    wait(semB);
+
+    signal(semC);
+
+}
+
+
+3)
+
+semaforo producto = 0;
+semaforo consumido = 2;
+
+
+procesoA(){
+    wait(consumido);
+    wait(consumido);
+
+    //producir
+
+    signal(producto);
+    signal(producto);
+
+}
+
+procesoB(){
+
+    wait(producto);
+
+    signal(consumido);
+}
+
+procesoC(){
+
+    wait(producto);
+
+    signal(consumido);
+
+}
+
+4)
+
+
+semaforo producto = 0;
+semaforo consumido = 2;
+semaforo semB = 0;
+semaforo semC = 2;
+
+
+procesoA(){
+    wait(consumido);
+    wait(consumido);
+
+    //producir
+
+    signal(producto);
+    signal(producto);
+
+}
+
+procesoB(){
+
+    wait(semC);
+    wait(producto);
+
+    signal(consumido);
+    signal(semB);
+}
+
+procesoC(){
+
+    wait(semB);
+    wait(semB);
+    wait(producto);
+    wait(producto);
+
+    signal(consumido);
+    signal(consumido);
+    signal(semC);
+    signal(semC);
+
+}

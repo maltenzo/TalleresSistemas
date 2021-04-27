@@ -1,0 +1,17 @@
+
+define semaforo int
+
+cola(semaforo) semaforos[n] = 0;
+semaforos[i] = 1;
+
+proceso (n,k){
+
+    wait(semaforos[k]);
+
+    /*
+    Ejecución
+    */
+
+    signal(semaforos[(k+1)%n])
+
+}

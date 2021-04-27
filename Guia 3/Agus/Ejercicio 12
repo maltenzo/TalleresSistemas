@@ -1,0 +1,9 @@
+a) El proceso p1 no termina su ejecución porque una vez que toma el lock se duerme y nada lo despierta.
+   El proceso p2 termina si logra tomar el lock, aunque nunca lo libera.
+
+b) Si pero no debería porque no hay proceso que libere el lock en ningún punto. 
+
+c) El proceso p3 no puede completar su ejecución ya que cada llamado recursivo de f() toma el mismo lock, por lo que el primer llamado lo conseguirá
+pero al efectuar el segundo llamado aun no lo habrá liberado y éste llamado se bloqueará, impidiendo el avance de ambos.
+
+Ni idea si esto debería llamarse deadlock.

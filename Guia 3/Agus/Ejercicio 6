@@ -1,0 +1,4 @@
+La solucion rompe la propiedad WAIT_FREEDOM porque solo el último proceso en ejecutarse envía una única señal, que despierta sólo a un proceso, el resto de los procesos quedan esperando 
+indefinidamente.
+
+Se podría solucionar emitiendo n-1 señales al llegar el caso, de modo que se despierten todos los procesos en espera y puedan entrar a la seccion crítica. (la de la teórica es mejor)

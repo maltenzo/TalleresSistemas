@@ -1,0 +1,1 @@
+FAIRNESS y WAIT-FREEDOM ya que podría haber procesos a los que nunca se los atienda si continuan llegando nuevos wait().

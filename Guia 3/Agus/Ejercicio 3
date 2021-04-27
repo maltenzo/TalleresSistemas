@@ -1,0 +1,1 @@
+Si porque no especifica que se solicite mutex cada vez que se modifica una variable compartida.

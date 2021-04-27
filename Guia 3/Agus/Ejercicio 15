@@ -1,0 +1,3 @@
+Para que se cumpla la propiedad no debería poder pasar que un proceso tenga menos recursos de lo que necesita, si requiere dos tiene que tener 2 o 0, no puede bloquear el uso de uno a la
+espera del segundo. Dicho esto, una vez que un proceso tiene los recursos que necesita, está asegurado que termina y los libera, de modo que ninguno quedará bloqueando recursos a la
+espera de otros.

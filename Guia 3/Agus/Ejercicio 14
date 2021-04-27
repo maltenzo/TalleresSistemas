@@ -1,0 +1,3 @@
+Si, si un proceso tiene a R2 y no lo libera hasta no tener R1 pero R1 está en uso por los otros dos procesos que a su vez no lo liberan hasta no tener a R2.
+Si R1 fuese utilizable por 3 procesos a la vez no habría posibilidad de que ocurra un deadlock ya que a lo sumo dos procesos estarían esperando a que se libere R2 
+pero no afectarían la ejecución del que lo está usando.
