@@ -1,0 +1,2 @@
+Favoreceria a los que tienen usos intensivoa de E/S pues al pasar mucho tiempo bloqueados esperando van a ganar prioridad frente a los que si se estuvieron ejecuctando.
+Por otro lado, al ser procesos que se bloquean constantemente, va a permitir a los demas que usen el cpu mientras estos esperan E/S

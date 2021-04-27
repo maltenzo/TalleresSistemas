@@ -1,0 +1,8 @@
+Tener dos colas, una para los procesos de alarmas y otra para el resto de tareas
+La cola de alarmas tiene prioridad por sobre la otra
+La cola de alarmas se atiende Fifo
+La cola normal se atiende con round robin
+
+Al cambiar de proceso siempre se mira la cola de alarmas para chequear si debe ejecutarse alguna.
+Si no hay ninguna alarma, se atienden las tareas regulares.
+si hay alarmas, se atienden estas primero hasta que esten resultas

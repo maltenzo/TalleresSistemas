@@ -1,0 +1,3 @@
+RoundRobin con colas de prioridad
+cada cola de prioridad tiene un quantum diferente
+tambien se podria implementar que haya un limite maximo de procesos atendidos por cola y obligue a cambiar
