@@ -38,8 +38,8 @@ Ni bien se termina de ejecutar un proceso, habilita la ejecución del siguiente.
 
 2)
 
-semaforo semA = 0;
-semaforo semB = 2;
+semaforo semA = 2;
+semaforo semB = 0;
 semaforo semC = 0;
 
 

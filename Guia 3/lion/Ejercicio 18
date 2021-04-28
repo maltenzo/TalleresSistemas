@@ -1,0 +1,48 @@
+//Problemas: Entra màs gente de que deberìa, cola de semaforos no funciona
+//Soluciòn: Mantener un int atomico de cantGente, usar un array de 17 semaforos para darle semaforos a cada cliente.
+
+atomic<Cola> sofa, parados = Cola();
+mutex = lock()
+haycliente, clienteEnSilla, clienteEnCaja = sem(0)
+
+
+Barbero(){
+    while(true){
+        hayCliente.wait();
+        var cliente = sofa.desencolar()
+        cliente.signal();
+        clienteEnSilla.wait();
+        cortarPelo();
+        cliente.signal();
+        clienteEnCaja.wait();
+        aceptarpago();
+        cliente.signal();
+    }
+
+}
+
+Cliente(){
+    entrar();
+    if(parados.size == 13){
+        salir();
+        exit();
+    }
+    semaphore miTurno = sem(0);
+    if(sofa.size == 4){
+        parados.encolar(miTurno);
+        miTurno.wait();
+    }
+    sofa.encolar(miTurno);
+    sentarseSofa();
+    miTurno.wait();
+    parados.desencolar().signal();
+    sentarSilla();
+    clienteEnSilla.signal();
+    miTurno.wait();
+    mutex.lock();
+        pagar();
+        cleinteEnCaja();
+        miTurno();
+    mutex.return();
+    salir();
+}
