@@ -1,0 +1,25 @@
+
+atomic<int> porciones;
+semaforo mutex = 1;
+
+antropofago(){
+    while(true){
+        
+        wait(mutex);
+        if(porciones == 0){
+            signal(vacia);
+            wait(cacerola);
+        }
+        //tomar porcion
+        porciones.getAndAdd(-1);
+        signal(mutex);
+        
+        comer();
+    }
+}
+
+cocinero(){
+    wait(vacía);
+    cocinar();
+    signal(cacerola);
+}

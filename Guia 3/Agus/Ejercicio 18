@@ -1,0 +1,78 @@
+
+atomic<int> cantGente = 3;
+atomic<int> siguienteEnFilaSofa = 0;
+atomic<int> siguienteCliente = 0;
+atomic<int> cajaOcupada = 0;
+
+atomic<cola> sillas;
+atomic<cola> caja;
+
+semaforo sofa[17] = 0;
+semaforo barbero[17] = 0;
+semaforo caja[17] = 0;
+
+
+
+void init(){
+
+    for(int i = 0; i < 4; i++){
+        sofa[i] = 1;
+    }
+
+}
+
+
+void cliente(){
+
+    //entrar
+    if (cantGente.getAndInc() < 20){
+
+
+        int id = siguienteCliente.getAndInc() % 17;
+        entrar();
+
+        sofa[id].wait();        //espera un lugar en el sofa
+        sentarseEnSofa();
+
+        sillas.enqueue(id);                                   //espera una silla
+        barbero[id].wait();                                   //espera respuesta del babero             
+        sofa[siguienteEnFilaSofa.getAndInc() % 17].signal();       //libera el sofa
+        sentarseEnSilla();
+
+        caja.enqueue(id);    //hace cola en la caja
+        caja[id].wait();     //espera a que le atiendan
+        pagar();
+    }
+
+    //salir
+    cantGente.getAndAdd(-1);
+    salir();
+
+}
+
+void barbero(){
+    int* cliente;
+
+    while(true){
+        //falta la parte en la que duermen si no ha clientes...
+
+        if(sillas.dequeue(cliente)){
+            barbero[&cliente].signal();
+            cortarCabello();
+        } else{
+            dormir++;
+        }
+
+        if (compareAndSet(cajaOcupada, 0, 1)){
+            if(caja.dequeue(cliente)){
+                caja[&cliente].signal();
+                aceptarPago();
+            }else {
+                dormir++;
+            }
+            cajaOcupada.getAndAdd(-1);
+        } 
+
+    }
+
+}

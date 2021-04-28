@@ -1,0 +1,10 @@
+a)libres - bool atómico
+  luz - bool atómico  
+  entreASala - bool
+  contador - int
+
+b)Añado un mutex que encierre al if de todos los prisioneros. De esta manera sólo un prisionero podrá estar en la sala e interactuar con la luz en un instante de tiempo.
+
+c) Si la propiedad FAIRNESS no se cumpliese existiría el escenario en que prisioneros que nunca entraron a la sala se vean excluidos indefinidamente por prisioneros que ya
+entraron pero siguen entrando contínuamente. Si se chequea entreASala previo a pedir el mutex se podría evitar que los prisioneros ocupen la sala una vez que ya cumplieron su parte
+pero aún existe el caso en que el prisionero 0 ocupa la sala contínuamente, para evitarlo se puede hacer que éste pida el mutex solo si la sala tiene la luz apagada.

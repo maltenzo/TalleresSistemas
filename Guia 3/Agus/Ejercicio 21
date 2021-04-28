@@ -1,0 +1,49 @@
+
+semaforo botellas = 0;
+semaforo porrones = 0;
+
+semaforo cerveza = 0;
+semaforo heladeraAbierta = 0;
+semaforo cervezaAdentro = 0;
+
+H(i){
+
+    EnchufarHeladera();
+
+    botellas = 15;
+    porrones = 10;
+
+    while(botellas != 0 || porrones != 0){
+        wait(cerveza);  //solo me va a llegar una cerveza si tengo lugar para ese tipo de envase
+        AbrirHeladera();
+
+        signal(heladeraAbierta);
+        wait(cervezaAdentro);
+
+        CerrarHeladera();
+    }
+
+    EnfriadoRapido();
+    spawn(H(i+1));
+}
+
+
+C(i, tipoEnvase){ //seguro me perdí de algo porque no se para qué usar el i
+
+    LlegarAlBar();
+
+    if(tipoEnvase == botella){
+        wait(botellas);
+    } else{
+        wait(porrones);
+    }
+
+    signal(cerveza);
+    wait(heladeraAbierta);
+
+    MeMetenEnHeladera(); //solo puede haber una a la vez porque lo rije la única herladera activa
+
+    signal(cervezaAdentro);
+
+
+}

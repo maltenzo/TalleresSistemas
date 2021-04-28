@@ -1,0 +1,17 @@
+semaforo machos[n];
+semaforo hembras[n];
+
+
+P(i, sexo){
+
+    if (sexo == masculino){
+        signal(machos[i]);
+        wait(hembras[i]);
+    }else{
+        signal(hembras[i]);
+        wait(machos[i]);
+    }
+
+    entrar(i);
+
+}
