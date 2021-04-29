@@ -1,0 +1,2 @@
+Se produce page fault cuando la página pedida no está cargada en memoria, es SO debe verificar si hay espacio en memoria e ir a buscarla a disco,
+si no hubiese espacio en memoria debería además decidir qué desalojar de la memoria.
