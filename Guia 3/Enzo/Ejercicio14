@@ -1,0 +1,4 @@
+Si, podrian estar dos procesos utilizando r2 esperando a que se libere r1
+Y el que usa R1 esperando a que se libere R2
+
+En el caso dos ya no hay posibilidad de deadlock

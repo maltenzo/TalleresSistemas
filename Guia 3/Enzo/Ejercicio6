@@ -1,0 +1,23 @@
+No se cumple con wait freedom pues solo se despierta el proceso despierta el que ve el count = n, el resto siguen en espera infinitamente
+
+el codigo deberia ser
+
+preparado()
+
+mutex.wait()
+
+count = count +1
+if count == n:
+  barrera.signal()
+
+mutex.signal()
+
+barrera.wait()
+count -- //no hace falta usar mutex porque solo el proceso despierto es el que puede tocar count
+if count != 0:
+  barrera.signal()
+
+critica()
+
+
+De esta forma los n procesos llegan a la seccion critica pues siempre que uno se despierta, despierta al proximo excepto por el ultimo,ese no despierta a nadie
