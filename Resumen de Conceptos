@@ -1,0 +1,37 @@
+-------------------------------Scheduling-------------------------------------------------
+FCFS: La CPU se asigna a los procesos en el orden de llegada. Cuando un proceso llega al sistema o vuelve a Ready de un bloqueo, se coloca al final de la cola
+
+Por prioidades: cada proceso tiene prioridad designada previamente con algun criterio de decision entre procesos de igual prioridad. Las prioridades podrian ser variables o fijas.
+
+
+SJF: Se ejecutan primero los procesos de menor duracion. No hay desalojo.
+
+
+SRTF: Primero se ejecutan los procesos a los que les resta menos tiempo de CPU.
+
+Round Robin: Se le da un queantum a cada proceso y se alterna entre ellos. Los procesos en reay estan en una cola. Pero el sistema operativo puede decidir interrumpir su ejecucion.
+
+multiples Colas: Existen varias colas de procesos en estado Ready, con distintas prioridades.
+
+Fairness:
+  "justicia" en la asignacion del CPU
+
+Tiempo de respuesta:
+Tiempo que el proceso tarda en empezar a ejecutarse.
+
+Throughput:
+Cantidad de procesos que terminan por unidad de tiempo.
+
+Turnaround:
+Tiempo total que le toma a un proceso ejecutar completamente.
+
+Waiting time:
+Tiempo que un proceso pasa en estado ready.
+
+--------------------------------Sincronizacion---------------------------------------------
+
+LOCK-FREE : Una implementacion es lock-free o deadlock-free si en todo momento hay algun momento hay algun proceso que termina en una cantidad acotada de pasos
+
+Wait-FREE: Decimos que una implementacion es wait-free si cada proceso termina en una cantidad acotada de pasos
+
+FAIRNESS: Decimos que la propiedad de fairness se cumple si puedo garantizar que cualquier proceso que este infinitamente disponible para ejecutar eventuralmente va a ejecutar

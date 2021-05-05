@@ -1,0 +1,6 @@
+a) 512Kb - 8Mb - 4Mb - 512Kb - el ultimo no entra
+   Se desperdician 3MB y 504Kb (Las particiones no utilizadas no cuentas, no?)
+
+b) Ninguna permite ejecutar los 5 a la vez.
+
+c)Al parecer best fit.

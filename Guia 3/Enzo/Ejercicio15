@@ -1,0 +1,1 @@
+Asumiendo que ningun proceso acapara recursos que no puede usar, es decir que si necesita dos pero solo hay uno disponible no lo reserva. En ese caso lo que necesiten menos de 2 los usaran y los liberaran, eventualmente dejando dos disponibles para aquellos que los necesitan

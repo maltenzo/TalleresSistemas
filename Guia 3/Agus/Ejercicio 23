@@ -1,0 +1,85 @@
+
+Cola<semaforo*> filaParaSubir[N];
+Cola<semaforo*> filaParaBajar[M];
+
+semaforo colectivero[M];
+
+Colectivero(cp, m){
+
+    int pasajeros = 0;
+    int parada = 0;
+    
+    while(parada < N){
+        detener();
+
+        pasajeros -= filaParaBajar.count; //resto antes de que baje alguno
+
+        semaforo* pasajeroSaliente;
+        if(filaParaBajar[m].dequeue(pasajeroSaliente)){
+            abrirPuertaTrasera();
+            signal(*pasajeroSaliente);
+        }
+        
+        if(pasajeros < cp){
+            abrirPuertaDelantera();
+            semaforo* pasajeroEntrante;
+            while(pasajeros < cp){
+                
+                if(filaParaSubir[parada].dequeue(pasajeroEntrante)){
+                    pasajeros++;
+                    signal(*pasajeroEntrante);
+                    wait(colectivero[m]);
+                    marcarTarifa();
+                    signal(*pasajeroEntrante);
+                    wait(colectivero[m]);
+
+                }else{
+                    break;
+                }
+
+            }
+            cerrarPuertaDelantera();
+        }
+
+        wait(seTerminoDeBajar[m]);
+        cerrarPuertaTrasera();
+
+        avanzar();
+        parada++;
+    }
+    
+
+
+}
+
+Pasajero(n){
+
+    semaforo turno = 0;
+    filaParaSubir[n].enqueue(&turno);
+    wait(turno);
+
+    int m = indicarDestino();
+    signal(colectivero[m]);
+    wait(turno);
+    pagarConSUBE();
+    signal(colectivero[m]);
+
+
+    viajar(); //asumo que viaja hasta que llega a la parada
+
+
+    dirigirseAPuertaTrasera();
+
+    filaParaBajar[m].enqueue(&turno);
+    wait(turno);
+    bajar();
+
+
+    somaforo* siguientePasajero;
+    if(filaParaBajar[m].dequeue(siguientePasajero)){
+        signal(*siguientePasajero);
+    } else{
+        signal(seTerminoDeBajar[m])
+    }
+
+}

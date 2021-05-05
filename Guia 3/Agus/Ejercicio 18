@@ -59,16 +59,12 @@ void barbero(){
         if(sillas.dequeue(cliente)){
             barbero[&cliente].signal();
             cortarCabello();
-        } else{
-            dormir++;
         }
 
         if (compareAndSet(cajaOcupada, 0, 1)){
             if(caja.dequeue(cliente)){
                 caja[&cliente].signal();
                 aceptarPago();
-            }else {
-                dormir++;
             }
             cajaOcupada.getAndAdd(-1);
         } 
