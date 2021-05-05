@@ -35,3 +35,84 @@ LOCK-FREE : Una implementacion es lock-free o deadlock-free si en todo momento h
 Wait-FREE: Decimos que una implementacion es wait-free si cada proceso termina en una cantidad acotada de pasos
 
 FAIRNESS: Decimos que la propiedad de fairness se cumple si puedo garantizar que cualquier proceso que este infinitamente disponible para ejecutar eventuralmente va a ejecutar
+
+
+Un puntero de un proceso es valido en otro proceso para los ejercicios
+
+
+variables atomicas
+
+atom.getAndAdd te devuelve el valor antes de agregar
+atom.getAndInc same pero con uno
+atom.compareAndSwap(valorParaComparar, valorParaSwaper) solo swapea si el comparador da =
+atom.compareAndChange() Lo mismo pero devuelve un booleano
+
+-------------------------------------------------Memoria-------------------------------------------------------------
+
+
+El memory manager se debe encargar de:
+  1 - asegurar la disponibilidad de Memoria
+  2 - asignar y liberar memoria
+  3 - organizar la memoria diponible
+  4 - Asegurar la proteccion de la memoria
+  5 - permitir el acceso a memoria compartida
+
+
+
+Memoria virtual: Hacerle creer al proceso que dispone de mas memoria de la que realmente tiene en cada momento
+
+memoria virtual >> memoria fisica
+
+El tamaño de la memoria virtual depende de la capacidad de direccionamiento.
+
+La memoria fisica se puede dividir en unidades de direccionamiento.
+
+
+Asignar: Reservar una porcio de memoria par aun proceso
+  - la porcion de memoria pasa a estar ocupada por el proceso que al solicito
+  - tenemos que saber quien es duelo de esa porcion de memoria
+
+Liberar: una porcion de la memoria vuelve a estar disponible para cualquier proceso.
+
+segmentacion: Separar la memoria en segmentos (tamaño variable)
+  - Un segmento generalmente se define con una base (donde empieza) y un limite (donde finaliza)
+  - Se acceden mediante direcciones logicas
+  - Los primeros bits de la direccion indexan en la tabla de segmentos en memoria, el resto es el offset dentro del segmento
+
+paginacion: dividir la memoria en paginas(muchas paginas, no necesariamente contiguas)
+  - Cada pagina tiene el mismo tamaño
+  - Los primero bits indexan posiciones en las tablas de paginas. Los ultimos son el offset en la pagina.
+
+marco de pagina: Es una porcion de la memoria fisica
+
+
+
+Algoritmos de remocion:
+    -FIFO
+    -LRU
+    -Segunda oportunidad
+      fifo con segunda oportunidad si fue referenciada
+    -Not recently used
+      se desalojan primero las no referenciadas ni modificadas, luego las solamente referenciadas, por ultimo las modificadas
+
+
+
+Para asegurar la proteccion de la memoria  cada proceso tiene
+  - su tabla de paginas
+  - su tabla de segmentos
+  - su espacdio de direccionameiento de memoria
+
+Acceso a memoria compartida:
+    Con paginacion podemos hacer que dos paginas de distintos procesos apunten al mismo marco de pagina
+
+
+
+Algoritmos de eleccion de bloque libre:
+    - first fit
+      Toma el primero que tenga suficiente espacio
+    - best  fit
+      Toma el que minimiza el espacio de desperdicio
+    - worst fit
+      Toma el que maximiza el espacio de despedicio
+    - quick fit
+      usa una estructura de datos para hacer una busqueda rapida
