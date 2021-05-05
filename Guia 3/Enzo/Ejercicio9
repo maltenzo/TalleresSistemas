@@ -1,0 +1,12 @@
+semaforo semaforosProcesos[n] = 1
+
+
+procesos(n,i):
+
+  if i != 0:
+    semaforosProcesos[i-1].wait()
+
+  p(i)
+
+  if i != n-1
+  semaforosProcesos[i+1].signal()

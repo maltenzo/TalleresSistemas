@@ -1,0 +1,112 @@
+A -> B -> C
+
+semaforoA = 1
+semaforoB = 0
+semaforoC = 0
+
+procesoA:
+  semaforoA.wait()
+  A()
+  semaforoB.signal()
+
+procesoB:
+  semaforoB.wait()
+  B()
+  semaforoC.signal()
+
+
+procesoC:
+  semaforoC.wait()
+  C()
+  semaforoA.signal()
+
+
+  Cumple con lock freedom porque se arranca por A y luego los procesos se van desbloqueando y bloqueando de forma consecuente y circular
+
+-----------------------------------------------------------------------------------------------
+
+  B -> B -> C -> A
+
+  semaforoA = 0
+  semaforoB = 2
+  semaforoC = 0
+
+  procesoA:
+    semaforoA.wait()
+    A()
+    semaforoB.signal()
+
+  procesoB:
+    semaforoB.wait()
+    B()
+    semaforoC.signal()
+
+
+  procesoC:
+    semaforoC.wait()
+    semaforoC.wait()
+    C()
+    semaforoA.signal()
+
+-----------------------------------------------------------------------------------------------
+
+Abb -ACC - ABC - ACB
+  semaforoA = 2
+  semaforoByC = 0
+
+
+  procesoA:
+    semaforoA.wait()
+    semaforoA.wait()
+    A()
+    semaforoByC.signal()
+    semaforoByC.signal()
+
+  procesoB:
+    semaforoByC.wait()
+    B()
+    semaforoA.signal()
+
+
+  procesoC:
+    semaforoByC.wait()
+    C()
+    semaforoA.signal()
+-----------------------------------------------------------------------------------------------
+
+
+
+
+ABB - AC - ABB - AC
+
+
+semaforoA = 1
+consumir = 0
+turnoDeB = 1
+turnoDeC = 0
+
+
+procesoA:
+  semaforoA.wait()
+  A()
+  consumir.signal
+  consumir.signal
+
+procesoB:
+  consumir.wait()
+  B()
+  semaforoA.signal()
+  turnoDeC.signal()
+  turnoDeB.wait()
+
+
+
+procesoC:
+  turnoDeC.wait()
+  turnoDeC.wait()
+  consumir.wait()
+  consumir.wait()
+  C()
+  semaforoA.signal()
+  turnoDeB.signal()
+  turnoDeB.signal()

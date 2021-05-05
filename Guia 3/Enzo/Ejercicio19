@@ -1,0 +1,15 @@
+
+semaforoM[n] = 0
+semaforoF[n] = 0
+P(i, sexo):
+if sexo = masculino:
+
+  semaforoM[i].signal()
+  semaforoF[i].wait()
+
+else:
+
+  semaforoF[i].signal()
+  semaforoM[i].wait()
+
+entrar(i)
