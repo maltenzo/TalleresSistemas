@@ -1,0 +1,25 @@
+semaphore semP[] 
+semaphore listaLaLista = sem(0)
+
+main(int i, int N){
+    for(j = 0, j<N, j++){
+        sempP.push_back(sem(0))
+    }
+
+    semP[i].signal()
+    listaLaLista.signal()
+}
+
+P(j,N){
+    listaLaLista.wait()
+    semP[j-1].wait()
+
+    *ejecuta*
+
+    semP[j%N].signal()
+}
+
+el main, por donde entran los parametros de i y N, crea los semaforos para cada Pi
+y luego le envìa una señal al semaforo i
+Cada Pj va a esperar a que estè la lista, luego a su semaforo, para ejecutar
+Luego de ejecutar le avisan al siguiente proceso, Pj+1 (usando %N para tener en cuenta N->0) que ya puede ejecutar.
