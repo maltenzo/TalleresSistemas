@@ -1,0 +1,222 @@
+    1) Planteamiento del problema:
+
+
+    En un escarpado camino de montaña, existe un tramo tan angosto que solo cabe un auto en el ancho de la calzada. No hay problema en que varios vehículos recorran el camino al mismo tiempo, siempre y cuando lo hagan en la misma dirección. Si un vehículo desea subir por el camino y hay vehículos bajando, deberá esperar a que estos terminen, y viceversa. Además, todos los vehículos que intentan recorrer el camino deben poder hacerlo en algún momento.
+    Nos han pedido escribir el código de los vehículos de forma tal que se cumplan estas condiciones. A continuación mostramos tres propuestas de implementación para un vehículo que desea subir por el camino. En cada caso, para un vehículo que baja, el código sería análogo. Analícelas detenidamente y a continuación responda las siguientes preguntas. Antes, definamos la siguiente propiedad:
+
+    TODOS_PUEDEN = "todos los vehículos que intentan recorrer el camino deben poder hacerlo en algún momento"
+
+    Considere estas tres versiones de código que procuran resolver este problema.
+
+    Versión 1:
+
+    // Variables compartidas
+    atomic<int> cantSubiendo = 0;
+    atomic<int> esperandoBajar = 0;
+    atomic<int> esperandoSubir = 0;
+    Semaforo nadieBajando(1);
+    Semaforo nadieSubiendo(1);
+    
+    VehículoSubiendo {
+        // Espero que no haya nadie bajando
+        nadieBajando.wait();
+        nadieBajando.signal();
+    
+        esperandoSubir.add(1);
+    
+        if (cantSubiendo.addAndGet(1) == 1) {
+            // No había nadie subiendo por el camino
+            // Me fijo si alguien quiere bajar.
+        while (esperandoBajar > 0) {
+            // Dejo que los que quieren bajar lo hagan.
+            sleep(1);
+        }
+        // Bloqueo el "molinete" para que nadie pueda bajar
+        nadieSubiendo.wait();
+    }
+    
+    recorrerCamino();
+    
+    esperandoSubir.dec(1);
+    
+    if (cantSubiendo.decAndGet(1) == 0) {
+        // Ya no queda nadie subiendo
+        // Libero el "molinete" para que otros puedan bajar
+        nadieSubiendo.signal();
+    }
+    }
+    Versión 2:
+
+    // Variables compartidas
+    atomic<int> cantSubiendo = 0;
+    atomic<int> cantBajando = 0;
+    Semaforo nadieBajando(1);
+    Semaforo nadieSubiendo(1);
+    
+    VehículoSubiendo {
+        // Espero que no haya nadie bajando
+        nadieBajando.wait();
+        nadieBajando.signal();
+    
+        if (cantSubiendo.addAndGet(1) == 1) {
+            // No había nadie subiendo por el camino
+            // Bloqueo el "molinete" para que nadie pueda bajar
+        nadieSubiendo.wait();
+        }
+    
+        recorrerCamino();
+    
+        if (cantSubiendo.decAndGet(1) == 0) {
+            // Ya no queda nadie subiendo
+            // Libero el "molinete" para que otros puedan bajar
+        nadieSubiendo.signal();
+        }
+    }
+    Versión 3:
+
+    // Variables compartidas
+    atomic<int> cantBajando = 0;
+    Semaforo nadieBajando(1);
+    Semaforo nadieSubiendo(1);
+    Semaforo haySubidores(0);
+    
+    VehículoSubiendo {
+        // Espero que no haya nadie bajando
+        nadieBajando.wait();
+        nadieBajando.signal();
+    
+        haySubidores.wait();
+        // No había nadie subiendo por el camino
+        // Bloqueo el "molinete" para que nadie pueda bajar
+        nadieSubiendo.wait();
+    
+        recorrerCamino();
+    
+        // Libero el "molinete" para que otros puedan bajar
+        nadieSubiendo.signal();
+    }
+    A continuación se les mostrarán 4 preguntas vinculadas a este mismo problema.
+
+    1) ¿Alguna de las tres versiones puede generar inanición (starvation)?
+
+        Nota: Recuerden que cuando se generan deadlocks, implica que también existe inanición.
+
+        Seleccione una:
+        a. Versión 2 y 3
+        b. Ninguna versión genera deadlock
+        c. Versión 2 solamente
+        d. Versión 1 solamente
+        e. Versión 1, 2 y 3 Correcta
+        f. Versión 1 y 3
+        g. Versión 3 solamente
+        h. Versión 1 y 2
+
+
+    2) Sin ninguna información adicional, ¿cuál de las versiones garantiza que se cumpla TODOS_PUEDEN?
+        Seleccione una:
+        a. Versión 1, 2 y 3
+        b. Versión 2 y 3
+        c. Versión 2
+        d. Versión 1 y 2
+        e. Versión 3
+        f. Versión 1
+        g. Ninguna de las versiones Correcta
+        h. Versión 1 y 3
+
+
+    3) Si alguna versión no cumple la propiedad TODOS_PUEDEN, para que la cumple ¿considera necesaria alguna propiedad de las vistas en clase? ¿cuál?
+
+    4)Según la respuesta de "Sobre la propiedad" de la pregunta anterior, si se garantiza la propiedad que usted respondió, ¿alguna de las versiones de código garantiza la propiedad TODOS_PUEDEN?
+        Seleccione una:
+        a. Versión 1, 2 y 3
+        b. Versión 1 y 2 Incorrecta
+        c. Versión 1
+        d. Ninguna versión
+        e. Versión 3
+        f. Versión 1 y 3
+        g. Versión 2 y 3
+        h. Versión 2
+
+
+
+2) Escriba un programa en pseudocódigo que permita la comunicación entre procesos usando pipes únicamente, y que cumpla el siguiente esquema: dado un número N de procesos (N pasado por parámetro), se debe crear una genealogía vertical de descendientes, donde el proceso padre (proceso 1) crea un hijo (proceso 2), este hijo crea otro proceso hijo (proceso 3, hijo del proceso 2, nieto del proceso 1), y así sucesivamente hasta crear al proceso N (hijo del proceso N-1, nieto del proceso N-2). Cada proceso descendiente debe escribirle vía pipe al proceso 1 un mensaje que le indique el vínculo familiar que tienen entre ellos (proceso i con respecto al proceso 1) a través de un mensaje que indique "Soy tu ***" donde *** indica el vínculo correspondiente.El proceso 1 debe escribir por la salida estándar el mensaje enviado de cada descendiente.
+
+    Ejemplo:
+
+    El proceso 2 le escribe al proceso 1 "Soy tu hijo".
+    El proceso 3 le escribe al proceso 1 "Soy tu nieto"
+    El proceso 4 le escribe al proceso 1 "Soy tu bisnieto"
+    El proceso 5 le escribe al proceso 1 "Soy tu tataranieto"
+    El proceso 6 le escribe al proceso 1 "Soy tu tataratataranieto"
+    ...
+    El proceso N le escribe al proceso 1 "Soy tu tatara...tataranieto" (serían N-4 prefijos tatara a nieto).
+    Deben cerrar todos los pipes que no usen al crear cada descendiente, y al final de cada uno también deben cerrar los pipes ya utilizados.
+    Es necesario que la salida del proceso 1 muestre sus decendientes ordenados.
+    Deben entregar su respuesta en un archivo adjunto, el cual puede ser un archivo pdf, una imagen, un archivo de texto.
+    Hint: Desde el proceso 5 en adelante, solo se deben concatenar el correspondiente número de tatara's como prefijo a la palabra nieto.
+
+
+3)
+    Versión 1. Para alumnes cuya libreta inicia en 1,3,5,7 y 9
+
+        Suponga que los siguientes procesos llegan en los tiempos indicados.
+
+        Proceso	Tiempo de procesamiento	Instante de llegada
+        P 1                	9	                  0
+        P 2                	5	                  3
+        P 3	                8	                  2
+        ¿Cuál es el tiempo de turnaround promedio para estos procesos usando SJF?
+        Para esta pregunta el turnaround de cada proceso se medirá según el tiempo de finalización de cada proceso menos su  tiempo de llegada.
+        Justifique su respuesta usando y adjuntando el diagrama de Gantt realizado.
+        Si se cambia el orden de las llegadas, el P1 llega en el instante 2, el P2 llega en el instante 0 y el P3 en el instante 3, ¿cambia el valor del turnaround promedio?
+        Justifique su respuesta.
+        Deben adjuntar sus respuestas en un archivo pdf, o en imagenes.
+        Asuma que el tiempo para cambio de contexto es de 2 unidades de tiempo.
+        El scheduler utiliza un política con desalojos (preemptive).
+    Versión 2. Para alumnes cuya libreta inicia en 2,4,6 y 8
+
+        Suponga que los siguientes procesos llegan en los tiempos indicados.
+
+        Proceso	Tiempo de procesamiento	Instante de llegada
+        P 1	                5	                  0
+        P 2	                7	                  3
+        P 3               	8	                  2
+        ¿Cuál es el tiempo de waiting promedio para estos procesos usando ROUND ROBIN con quantum = 2?
+        Justifique su respuesta usando y adjuntando el diagrama de Gantt realizado.
+        Si se cambia el orden de las llegadas, el P1 llega en el instante 2, el P2 llega en el instante 0 y el P3 en el instante 3, ¿cambia el valor del waiting promedio?
+        Justifique su respuesta.
+        Deben adjuntar sus respuestas en un archivo pdf, o en imagenes.
+        Asuma que el tiempo para cambio de contexto es de 2 unidades de tiempo.
+        Archivo de texto respuestas por escrito
+
+
+4)
+    Versión 1: Para alumenes con libretas que inician en 1,2,3
+        Considerar la siguiente secuencia de referencias a páginas:
+
+        5, 6, 2, 1, 2, 1, 2, 3, 4, 2, 1, 3, 7, 6, 3, 2, 1, 2, 3, 6
+
+        ¿Cuántos fallos de página se producirán con el algoritmo de reemplazo LRU,  suponiendo que se tienen 4 frames?
+        Al comenzar todos los frames se encuentran vacíos, por lo que la primer referencia a una página siempre genera fallo de página.
+        Justifique su respuesta con el digrama que utilizó para el cálculo.
+        Adjunte en un archivo pdf o en imágenes su justificación.
+
+    Versión 2: Para alumenes con libretas que inician en 4,5,6
+        Considerar la siguiente secuencia de referencias a páginas:
+
+        3, 4, 2, 1, 2, 1, 3, 7, 6, 1, 2, 3, 4, 2, 3, 2, 1, 2, 3, 6
+
+        ¿Cuántos fallos de página se producirán con el algoritmo de reemplazo Second Chance,  suponiendo que se tienen 4 frames?
+        Al comenzar todos los frames se encuentran vacíos, por lo que la primer referencia a una página siempre genera fallo de página.
+        Justifique su respuesta con el digrama que utilizó para el cálculo.
+        Adjunte en un archivo pdf o en imágenes su justificación.
+
+    Versión 3: Para alumenes con libretas que inician en 7,8,9
+        Considerar la siguiente secuencia de referencias a páginas:
+
+        2, 1, 2, 3, 6, 5, 6, 2, 1, 2, 1, 2, 3, 4, 2, 1, 3, 7, 6, 3
+
+        ¿Cuántos fallos de página se producirán con el algoritmo de reemplazo FIFO,  suponiendo que se tienen 4 frames?
+        Al comenzar todos los frames se encuentran vacíos, por lo que la primer referencia a una página siempre genera fallo de página.
+        Justifique su respuesta con el digrama que utilizó para el cálculo.
+        Adjunto en un archivo pdf o en imágenes su justificación.

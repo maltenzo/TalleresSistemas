@@ -1,0 +1,5 @@
+1) El turnaround promedio es de 18,3 tiempos del procesador, suponiendo que se empieze a 
+    desalojar un proceso de mayor duraciòn dede el instante que estè ready uno de menor duraciòn
+    y que no se pueda interrumpir un cambio de contexto.
+
+2) El turnaround cambia a 13.3, ya que ahora no hay que desalojar ningun proceso.

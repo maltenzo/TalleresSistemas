@@ -1,0 +1,4 @@
+1)  a)todos
+    b)todos
+    c)Necesitariamos que garantizen STARVATION-FREEDOM sobre recorrerCamino(), de forma que si hay autos bajando/subiendo y autos esperando subir/bajar, eventualmente los que esperan puedan subir/bajar
+    d) version 1 y 2, aunque 2 no cumple la consigna

@@ -1,0 +1,79 @@
+
+
+main(int n){
+    char rdBuffer[8 + 6*(n-1) + 5 + 4];
+    char relación[];
+    int id = -1;
+
+    //creo los pipes
+    int pipesFD[n-1][2];
+    for(int i = 0; i<n-1; i++){
+        pipe(pipesFD[i]);
+    }
+
+    //creo los descendientes, como id empieza en -1, los descendientes van del 0 al n-1
+    while(id < n-1){ 
+        pid_t descendiente = fork();
+        if(descendiente != 0){
+            break;
+        }
+        id++;
+    }
+
+    if(id != -1){ //si no son el origen
+
+        //cierro pipes de los descendientes que no usen (usan id)
+        for(int i = 0; i<n ; i++){
+            if(i != id){
+                close(pipesFD[i][0]);
+                close(pipesFD[i][1]);
+            }
+        }
+
+        //armo la relaciòn que tengo con el origen
+        switch(id){
+            case 0:
+                relaciòn = "hijo";
+                break;
+
+            case 1:
+                relaciòn = "nieto";
+                break;
+            
+            case 2:
+                relaciòn = "bisnieto";
+                break;
+            
+            default:
+                relaciòn = "hijo";
+                for(int i = id, i > 2; i--){
+                    relaciòn = concat("tatara", realciòn);
+                }
+                break;
+        }
+
+        relaciòn = concat("Soy tu ", relaciòn)
+
+        //enviò y cierro pipes
+        send(pipesFD[id][1], relaciòn, strLen(realciòn)+1);
+
+        close(pipesFD[id][0]);
+        close(pipesFD[id][1]);
+        
+    }else{ //soy el origen
+
+        //leo los pipes, printeo y cierro
+        for(int i = 0; i<n-1; i++){
+            read(pipesFD[id][0], rdBuffer, sizeOf(rdBuffer));
+            printf("el descendiente %i me dice %" %s %" /n ", i, rdBuffer);
+
+            close(pipesFD[i][0]);
+            close(pipesFD[i][1]);
+        }
+
+    }
+
+
+
+    
+}
