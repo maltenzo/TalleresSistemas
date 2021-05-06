@@ -1,0 +1,42 @@
+
+listaLaComida, aCocinarCocinero = sem(0)
+atomic<int> porciones = 10?
+
+antropofago{
+    while(true){
+
+        while(true){
+            comida = porciones.getAndAdd(-1)
+            if(comida > 0){
+                agarrar_porcion()
+                comer()
+            }
+
+            if(comida == 0){
+                aCocinarCocinero.signal()
+                quierenComer.signal()
+                listaLaComida.wait()
+            }
+
+            if(comida < 0){
+                quierenComer.signal()
+                listaLaComida.wait()
+            }
+        }
+    }
+
+}
+
+
+cocinero{
+    while(true){
+        aCocinarCociner.wait()
+
+        int comida = porciones.getAndAdd(-porciones.getAndAdd(0) + cocinar())
+
+        while(comida < 0){
+            listaLaComida.signal()
+            comida++
+        }
+    ]
+}

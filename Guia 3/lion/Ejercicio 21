@@ -1,0 +1,39 @@
+
+
+H(i){
+    enchufarHeladera();
+
+    int litro, porrones = 0;
+
+    while(litro < 15 || porrones < 10){
+
+        if(porron <10){
+            hayEspacioPorrones.siganl();
+            hayPorron.wait()
+
+            abrirHeladera()
+            
+            abierta.signal()
+            entroCerveza.wait()
+            
+            cerrarHeladera();
+            porrones++;
+        }
+
+        if(porron <15){
+            hayEspacioLitros.siganl();
+            hayLitro.wait()
+
+            abrirHeladera()
+            
+            abierta.signal()
+            entroCerveza.wait()
+            
+            cerrarHeladera();
+            litros++;
+        }
+    }
+
+    enfriarRapido();
+    spawn(H(i+1));
+}
