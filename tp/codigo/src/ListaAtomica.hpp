@@ -3,6 +3,9 @@
 
 #include <atomic>
 #include <cstddef>
+using namespace std;
+
+mutex mutex_insertar;
 
 template<typename T>
 class ListaAtomica {
@@ -31,7 +34,17 @@ class ListaAtomica {
 
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
-            //lion : usar un mutex, para que solo edite un thread a la vez
+        //preparar nodo
+        Nodo_t nuevoNodo = Nodo(valor);
+        mutex_insertar.lock();
+            //editar lista
+            nuevoNodo.siguiente = _cabeza;
+            _cabeza = &nuevoNodo;
+
+        mutex_insertar.unlock();
+
+        
+        //lion : usar un mutex, para que solo edite un thread a la vez
                 //podemos preparar el nodo a ser insertado afuera del mutex, y solo lockeamos el cambio de cabeza y asignar cabeza previa como sig.
     }
 
@@ -51,6 +64,53 @@ class ListaAtomica {
             n = n->_siguiente;
         }
         return cant;
+    }
+
+    bool find(string clave) const{
+        Nodo *n = _cabeza.load();
+        bool finded = false;
+        while (n != nullptr && !finded) {
+            if (clave == n->_valor.first){finded = true;}
+            n = n->_siguiente;
+        }
+        return finded;
+    }
+
+     void incrementar(string clave) const{
+        Nodo *n = _cabeza.load();
+        bool finded = false;
+        while (n != nullptr && !finded) {
+            if (clave == n->_valor.first){
+                finded = true;
+                n->_valor.second++
+                }
+            n = n->_siguiente;
+        }
+    }
+
+    vector<string> claves()const{
+        vector<string> claves;
+        Nodo *n = _cabeza.load();
+        while (n != nullptr) {
+            claves.push_back(n->_valor.first);
+            n = n->_siguiente;
+        }
+        return claves;
+
+    }
+
+    unsigned int apariciones(string clave){
+        Nodo *n = _cabeza.load();
+        bool finded = false;
+        unsigned int apariciones = 0
+        while (n != nullptr && !finded) {
+            if (clave == n->_valor.first){
+                finded = true;
+                apariciones = n->_valor.second
+                }
+            n = n->_siguiente;
+        }
+        return apariciones;
     }
 
     struct iterator {

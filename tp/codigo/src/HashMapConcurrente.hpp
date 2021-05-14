@@ -6,6 +6,7 @@
 #include <atomic>
 #include <string>
 #include <vector>
+#include "semaphore.h"
 
 #include "ListaAtomica.hpp"
 
@@ -16,6 +17,7 @@ class HashMapConcurrente {
     static constexpr int cantLetras = 26;
 
     HashMapConcurrente();
+    ~HashMapConcurrente();
 
     void incrementar(std::string clave);
     std::vector<std::string> claves();
@@ -26,6 +28,7 @@ class HashMapConcurrente {
 
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
+    vector<sem_t*> semaforos;
 
     static unsigned int hashIndex(std::string clave);
 };
