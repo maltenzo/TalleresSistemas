@@ -31,6 +31,8 @@ class ListaAtomica {
 
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
+            //lion : usar un mutex, para que solo edite un thread a la vez
+                //podemos preparar el nodo a ser insertado afuera del mutex, y solo lockeamos el cambio de cabeza y asignar cabeza previa como sig.
     }
 
     T& operator[](size_t i) const {

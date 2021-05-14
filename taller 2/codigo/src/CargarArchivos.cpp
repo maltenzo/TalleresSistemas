@@ -24,6 +24,7 @@ int cargarArchivo(
     }
     while (file >> palabraActual) {
         // Completar (Ejercicio 4)
+            //lion: hacemos insertar de cada palabra
         cant++;
     }
     // Cierro el archivo.
@@ -43,6 +44,8 @@ void cargarMultiplesArchivos(
     std::vector<std::string> filePaths
 ) {
     // Completar (Ejercicio 4)
+        //lion: hacemos varios threads, cada uno hace cargarArchivo
+            //no se si hay que tener algo más en cuenta??
 }
 
 #endif

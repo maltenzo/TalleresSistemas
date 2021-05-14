@@ -20,17 +20,22 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 
 void HashMapConcurrente::incrementar(std::string clave) {
     // Completar (Ejercicio 2)
+        //lion: usamos un semaforo que empieza en 1, asi bloqueamos lectura, creación y escritura del bucket accedido.
 }
 
 std::vector<std::string> HashMapConcurrente::claves() {
     // Completar (Ejercicio 2)
+        //lion: solo dejamos que lea todo, no? sin semaforos ni nada.
 }
 
 unsigned int HashMapConcurrente::valor(std::string clave) {
     // Completar (Ejercicio 2)
+        //lion: mismo que claves, solo lo hace y ya
 }
 
-hashMapPair HashMapConcurrente::maximo() {
+hashMapPair HashMapConcurrente::maximo() { 
+        //lion: habría que usar el mismo semaforo que usa insertar. Para que que sea el maximo de un momento de ejecución
+            
     hashMapPair *max = new hashMapPair();
     max->second = 0;
 
@@ -50,6 +55,10 @@ hashMapPair HashMapConcurrente::maximo() {
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
+        //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
+            //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
+            //cuando terminan, el proceso original revisa ese array y busca el máx
+            //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
 }
 
 #endif
