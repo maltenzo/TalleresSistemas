@@ -25,6 +25,7 @@ int cargarArchivo(
     while (file >> palabraActual) {
         // Completar (Ejercicio 4)
             //lion: hacemos insertar de cada palabra
+            hashMap.incrementar(palabraActual);
         cant++;
     }
     // Cierro el archivo.
