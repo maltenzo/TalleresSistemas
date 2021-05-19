@@ -4,11 +4,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-<<<<<<< HEAD
+
 //#include <pthread.h>
-=======
-#include <pthread.h>
->>>>>>> f3c37b7db061516462d954608da509ca71cef75e
+
 #include <thread>
 
 #include "CargarArchivos.hpp"
@@ -55,11 +53,7 @@ void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
         //agus: Me parece que no, se supone que de la consistencia de incrementar 
         //ya se encarga la función misma
     
-<<<<<<< HEAD
-    std::vector<thread*> threads(cantThreads);
-=======
     vector<thread> threads(cantThreads);
->>>>>>> f3c37b7db061516462d954608da509ca71cef75e
 
     for (int i = 0; i < cantThreads; i++) { 
         threads[i] = thread(cargarArchivo, hashMap, filePaths[i]);

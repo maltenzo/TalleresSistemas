@@ -108,7 +108,8 @@ hashMapPair HashMapConcurrente::maximo() {
 
 void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
                 
-    hashMapPair* maximo_local = &hashMapPair("", 0);
+    //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
+    hashMapPair* maximo_local = nullptr;
     int index_tabla = tablaInicio;
     vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
     ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
@@ -118,7 +119,7 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
         sem_wait(semaforos_hash[index_tabla]);
             for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
-                if(entrada->second >= maximo_local->second){
+                if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
                     maximo_local = entrada;
                 }
             }
