@@ -54,13 +54,15 @@ void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
         //ya se encarga la función misma
     
     vector<thread> threads(cantThreads);
+    unsigned int cantidadArchivos = filePaths.size();
+    for (unsigned int i = 0; i < cantidadArchivos; i++) { 
+        threads[i] = thread(cargarArchivo, ref(hashMap), filePaths[i]);
 
-    for (unsigned int i = 0; i < cantThreads; i++) { 
-        threads[i] = thread(cargarArchivo, hashMap, filePaths[i]);
-    }
-
-    for (auto &t : threads) { 
-        t.join();
+        if(i==cantThreads or i==cantidadArchivos){//si ya use mi tope de threads o termine de cargar archivos le hago un wait a todos antes de continuar
+            for (auto &t : threads) { 
+            t.join();
+            }
+        }
     }
 
 }
