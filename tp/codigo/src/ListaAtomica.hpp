@@ -7,7 +7,7 @@
 #include <vector>
 using namespace std;
 
-mutex mutex_insertar;
+
 
 template<typename T>
 class ListaAtomica {
@@ -20,6 +20,7 @@ class ListaAtomica {
     };
 
     std::atomic<Nodo *> _cabeza;
+    mutex mutex_insertar;
 
  public:
     ListaAtomica() : _cabeza(nullptr) {}
