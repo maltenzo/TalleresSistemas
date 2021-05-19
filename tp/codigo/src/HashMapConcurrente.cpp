@@ -65,6 +65,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
 std::vector<std::string> HashMapConcurrente::claves() {
     // Completar (Ejercicio 2)
         //lion: solo dejamos que lea todo, no? sin semaforos ni nada.
+        //agus: tal vez se la podría optimizar con threads?
     vector<string> las_claves; 
     for(unsigned int i = 0; i<cantLetras; i++){
         vector<string> claves_i = tabla[i]->claves();
@@ -85,7 +86,9 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 hashMapPair HashMapConcurrente::maximo() { 
         //lion: habría que usar el mismo semaforo que usa insertar. Para que que sea el maximo de un momento de ejecución
         // preguntar inconsistencias  
-    hashMapPair *max = new hashMapPair();
+        //agus: cabe aclarar que se bloquean los semaforos uno a uno permitiendo que se realice cualquier cambio posterior a la lista 
+        // que está siendo analizada y luego se devuelven todos juntos.
+    hashMapPair* max = new hashMapPair();
     max->second = 0;
     //for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
@@ -105,58 +108,58 @@ hashMapPair HashMapConcurrente::maximo() {
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
-        //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
-            //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
-            //cuando terminan, el proceso original revisa ese array y busca el máx
-            //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
-            //esto esta incompleto, hay que terminarlo
-            vector<hashMapPair*> maximos [cant_threads];
-            int tamaño_segmento = cantLetras / cant_threads;
-            vector<thread*> threads;
-            Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla);
+    //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
+    //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
+    //cuando terminan, el proceso original revisa ese array y busca el máx
+    //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
+    //esto esta incompleto, hay que terminarlo
+    vector<hashMapPair*> maximos [cant_threads];
+    int tamaño_segmento = cantLetras / cant_threads;
+    vector<thread*> threads;
+    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
 
-            for(int id = 0; id<cant_threads; id++){
-             thread *t = new thread(maximo_en_segmento, id, tamaño_segmento*id, tamaño_segmento*(id+1), info);
-             threads.push_back(t);
-            }
-            
-            hashMapPair max = hashMapPair("",0);
+    for(int id = 0; id<cant_threads; id++){
+        thread *t = new thread(maximo_en_segmento, id, tamaño_segmento*id, tamaño_segmento*(id+1), info);
+        threads.push_back(t);
+    }
+    
+    hashMapPair max = hashMapPair("",0);
 
-            
-            for(int id = 0; id<cant_threads; id++){
-                (maximos[id])->join();
-                delete (maximos[id]);
-                if(max.second <= maximos[id]->second){
-                    max = *(maximos[id]);
-                }
-            }
+    
+    for(int id = 0; id<cant_threads; id++){
+        (maximos[id])->join(); //agus: join de un hashMapPair? no sera threads?
+        delete (maximos[id]);
+        if(max.second <= maximos[id]->second){
+            max = *(maximos[id]);
+        }
+    }
 
-            return max;
+    return max;
             
 }
 
 void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
                 
-                hashMapPair* maxi = & hashMapPair("", 0);
-                int index_tabla = tablaInicio;
-                vector<sem_t*> semaforos_hash = info._sems;
-                ListaAtomica<hashMapPair>* tabla_hash = info._la_tabla;
-                vector<hashMapPair*> *maxs = info._maximos;
+    hashMapPair* maximo_local = & hashMapPair("", 0);
+    int index_tabla = tablaInicio;
+    vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
+    ListaAtomica<hashMapPair>* tabla_hash = info._la_tabla;
+    vector<hashMapPair*> *vector_maximos = info._maximos;
 
-                while(index_tabla < tablaFin){
-                    sem_wait(semaforos_hash[index_tabla]);
-                        for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
-                            hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
-                            if(entrada->second >= maxi->second){
-                                maxi = entrada;
-                            }
-                        }
+    while(index_tabla < tablaFin){
+        sem_wait(semaforos_hash[index_tabla]);
+            for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
+                hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
+                if(entrada->second >= maximo_local->second){
+                    maximo_local = entrada;
                 }
+            }
+    }
 
-                (*maxs)[threadID] = maxi;
-                for(int i = tablaInicio; i< tablaFin; i++){
-                    sem_post(semaforos_hash[i]);
-                }
-            };
+    (*vector_maximos)[threadID] = maximo_local;
+    for(int i = tablaInicio; i< tablaFin; i++){
+        sem_post(semaforos_hash[i]);
+    }
+};
     // podemos hacer varias implementaciones de esto para experimentar
 #endif
