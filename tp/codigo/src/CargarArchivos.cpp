@@ -39,14 +39,26 @@ int cargarArchivo(
 }
 
 
-void cargarMultiplesArchivos(
-    HashMapConcurrente &hashMap,
-    unsigned int cantThreads,
-    std::vector<std::string> filePaths
-) {
+void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
+                             unsigned int cantThreads,
+                             std::vector<std::string> filePaths) 
+{
     // Completar (Ejercicio 4)
         //lion: hacemos varios threads, cada uno hace cargarArchivo
-            //no se si hay que tener algo más en cuenta??
+        //no se si hay que tener algo más en cuenta??
+        //agus: Me parece que no, se supone que de la consistencia de incrementar 
+        //ya se encarga la función misma
+    
+    std::vector<std::thread> threads(cantThreads);
+
+    for (int i = 0; i < cantThreads; i++) { 
+        threads[i] = std::thread(cargarArchivo, hashMap, filePaths[i]);
+    }
+
+    for (auto &t : threads) { 
+        t.join();
+    }
+
 }
 
 #endif
