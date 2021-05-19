@@ -11,12 +11,12 @@
 using namespace std ;
 
 struct Info_Tabla{
-    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, ListaAtomica<hashMapPair> *tabla_hash)
+    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, void *tabla_hash )
     : _maximos(maxs), _sems(semaforos_hash), _la_tabla(tabla_hash) {}
 
     vector<hashMapPair*> *_maximos;
     vector<sem_t*> _sems;
-    ListaAtomica<hashMapPair> *_la_tabla;
+    void *_la_tabla;
 };
 
 
@@ -113,7 +113,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     //cuando terminan, el proceso original revisa ese array y busca el máx
     //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
     //esto esta incompleto, hay que terminarlo
-    vector<hashMapPair*> maximos [cant_threads];
+    vector<hashMapPair*> maximos(cant_threads);
     int tamaño_segmento = cantLetras / cant_threads;
     vector<thread*> threads;
     Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
@@ -127,7 +127,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
 
     
     for(int id = 0; id<cant_threads; id++){
-        (maximos[id])->join(); //agus: join de un hashMapPair? no sera threads?
+        (threads[id])->join(); //agus: join de un hashMapPair? no sera threads?
         delete (maximos[id]);
         if(max.second <= maximos[id]->second){
             max = *(maximos[id]);
@@ -143,7 +143,7 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
     hashMapPair* maximo_local = & hashMapPair("", 0);
     int index_tabla = tablaInicio;
     vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
-    ListaAtomica<hashMapPair>* tabla_hash = info._la_tabla;
+    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
     vector<hashMapPair*> *vector_maximos = info._maximos;
 
     while(index_tabla < tablaFin){
