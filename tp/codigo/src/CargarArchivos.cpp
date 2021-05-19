@@ -55,7 +55,7 @@ void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
     
     vector<thread> threads(cantThreads);
 
-    for (int i = 0; i < cantThreads; i++) { 
+    for (unsigned int i = 0; i < cantThreads; i++) { 
         threads[i] = thread(cargarArchivo, hashMap, filePaths[i]);
     }
 

@@ -117,7 +117,7 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
 
     while(index_tabla < tablaFin){
         sem_wait(semaforos_hash[index_tabla]);
-            for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
+            for(unsigned int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
                 if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
                     maximo_local = entrada;
@@ -145,7 +145,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     vector<thread*> threads;
     Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
 
-    for(int id = 0; id<cant_threads; id++){
+    for(unsigned int id = 0; id<cant_threads; id++){
         thread *t = new thread(maximo_en_segmento, id, tamano_segmento*id, tamano_segmento*(id+1), info);
         threads.push_back(t);
     }
@@ -153,7 +153,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     hashMapPair max = hashMapPair("",0);
 
     
-    for(int id = 0; id<cant_threads; id++){
+    for(unsigned int id = 0; id<cant_threads; id++){
         (threads[id])->join(); //agus: join de un hashMapPair? no sera threads?
         delete (maximos[id]);
         if(max.second <= maximos[id]->second){
