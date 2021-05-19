@@ -10,6 +10,16 @@
 #include "HashMapConcurrente.hpp"
 using namespace std ;
 
+struct Info_Tabla{
+    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, ListaAtomica<hashMapPair> *tabla_hash)
+    : _maximos(maxs), _sems(semaforos_hash), _la_tabla(tabla_hash) {}
+
+    vector<hashMapPair*> *_maximos;
+    vector<sem_t*> _sems;
+    ListaAtomica<hashMapPair> *_la_tabla;
+};
+
+
 HashMapConcurrente::HashMapConcurrente() {
 
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
@@ -77,9 +87,10 @@ hashMapPair HashMapConcurrente::maximo() {
         // preguntar inconsistencias  
     hashMapPair *max = new hashMapPair();
     max->second = 0;
-    for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
+    //for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
-        for (auto &p : *tabla[index]) {
+        sem_wait(semaforos[index]);
+        for(auto &p : *tabla[index]){
             if (p.second > max->second) {
                 max->first = p.first;
                 max->second = p.second;
@@ -101,21 +112,39 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
             //esto esta incompleto, hay que terminarlo
             vector<hashMapPair*> maximos [cant_threads];
             int tamaño_segmento = cantLetras / cant_threads;
+            vector<thread*> threads;
+            Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla);
+
             for(int id = 0; id<cant_threads; id++){
-             thread t = thread(maximo_en_segmento, id, tamaño_segmento*id, tamaño_segmento*(id+1), &maximos, &semaforos, tabla);
-             t.join();
+             thread *t = new thread(maximo_en_segmento, id, tamaño_segmento*id, tamaño_segmento*(id+1), info);
+             threads.push_back(t);
             }
             
+            hashMapPair max = hashMapPair("",0);
+
+            
+            for(int id = 0; id<cant_threads; id++){
+                (maximos[id])->join();
+                delete (maximos[id]);
+                if(max.second <= maximos[id]->second){
+                    max = *(maximos[id]);
+                }
+            }
+
+            return max;
             
 }
 
-void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, vector<hashMapPair*>* maxs,
-                                            vector<sem_t*> * semaforos_hash, ListaAtomica<hashMapPair>* tabla_hash) {
+void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
                 
                 hashMapPair* maxi = & hashMapPair("", 0);
                 int index_tabla = tablaInicio;
+                vector<sem_t*> semaforos_hash = info._sems;
+                ListaAtomica<hashMapPair>* tabla_hash = info._la_tabla;
+                vector<hashMapPair*> *maxs = info._maximos;
+
                 while(index_tabla < tablaFin){
-                    sem_wait((*semaforos_hash)[index_tabla]);
+                    sem_wait(semaforos_hash[index_tabla]);
                         for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
                             hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
                             if(entrada->second >= maxi->second){
@@ -126,7 +155,7 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, vector<hash
 
                 (*maxs)[threadID] = maxi;
                 for(int i = tablaInicio; i< tablaFin; i++){
-                    sem_post((*semaforos_hash)[i]);
+                    sem_post(semaforos_hash[i]);
                 }
             };
     // podemos hacer varias implementaciones de esto para experimentar
