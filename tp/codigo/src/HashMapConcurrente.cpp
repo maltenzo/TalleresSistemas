@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include "semaphore.h"
+#include <vector>
 
 #include "HashMapConcurrente.hpp"
 using namespace std ;
@@ -105,42 +106,10 @@ hashMapPair HashMapConcurrente::maximo() {
 }
 
 
-
-hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
-    // Completar (Ejercicio 3)
-    //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
-    //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
-    //cuando terminan, el proceso original revisa ese array y busca el máx
-    //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
-    //esto esta incompleto, hay que terminarlo
-    vector<hashMapPair*> maximos(cant_threads);
-    int tamaño_segmento = cantLetras / cant_threads;
-    vector<thread*> threads;
-    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
-
-    for(int id = 0; id<cant_threads; id++){
-        thread *t = new thread(maximo_en_segmento, id, tamaño_segmento*id, tamaño_segmento*(id+1), info);
-        threads.push_back(t);
-    }
-    
-    hashMapPair max = hashMapPair("",0);
-
-    
-    for(int id = 0; id<cant_threads; id++){
-        (threads[id])->join(); //agus: join de un hashMapPair? no sera threads?
-        delete (maximos[id]);
-        if(max.second <= maximos[id]->second){
-            max = *(maximos[id]);
-        }
-    }
-
-    return max;
-            
-}
-
 void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
                 
-    hashMapPair* maximo_local = & hashMapPair("", 0);
+    //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
+    hashMapPair* maximo_local = nullptr;
     int index_tabla = tablaInicio;
     vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
     ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
@@ -148,9 +117,9 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
 
     while(index_tabla < tablaFin){
         sem_wait(semaforos_hash[index_tabla]);
-            for(int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
+            for(unsigned int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
-                if(entrada->second >= maximo_local->second){
+                if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
                     maximo_local = entrada;
                 }
             }
@@ -162,4 +131,39 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
     }
 };
     // podemos hacer varias implementaciones de esto para experimentar
+
+
+hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
+    // Completar (Ejercicio 3)
+    //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
+    //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
+    //cuando terminan, el proceso original revisa ese array y busca el máx
+    //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
+    //esto esta incompleto, hay que terminarlo
+    vector<hashMapPair*> maximos(cant_threads);
+    int tamano_segmento = cantLetras / cant_threads;
+    vector<thread*> threads;
+    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
+
+    for(unsigned int id = 0; id<cant_threads; id++){
+        thread *t = new thread(maximo_en_segmento, id, tamano_segmento*id, tamano_segmento*(id+1), info);
+        threads.push_back(t);
+    }
+    
+    hashMapPair max = hashMapPair("",0);
+
+    
+    for(unsigned int id = 0; id<cant_threads; id++){
+        (threads[id])->join(); //agus: join de un hashMapPair? no sera threads?
+        delete (maximos[id]);
+        if(max.second <= maximos[id]->second){
+            max = *(maximos[id]);
+        }
+    }
+
+    return max;
+            
+}
+
+
 #endif

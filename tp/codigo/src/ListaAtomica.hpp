@@ -3,9 +3,11 @@
 
 #include <atomic>
 #include <cstddef>
+#include <mutex>
+#include <vector>
 using namespace std;
 
-mutex mutex_insertar;
+
 
 template<typename T>
 class ListaAtomica {
@@ -18,6 +20,7 @@ class ListaAtomica {
     };
 
     std::atomic<Nodo *> _cabeza;
+    mutex mutex_insertar;
 
  public:
     ListaAtomica() : _cabeza(nullptr) {}
@@ -35,10 +38,10 @@ class ListaAtomica {
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
         //preparar nodo
-        Nodo_t nuevoNodo = Nodo(valor);
+        Nodo nuevoNodo = Nodo(valor);
         mutex_insertar.lock();
             //editar lista
-            nuevoNodo.siguiente = _cabeza;
+            nuevoNodo._siguiente = _cabeza;
             _cabeza = &nuevoNodo;
 
         mutex_insertar.unlock();
@@ -82,13 +85,13 @@ class ListaAtomica {
         while (n != nullptr && !finded) {
             if (clave == n->_valor.first){
                 finded = true;
-                n->_valor.second++
+                n->_valor.second++;
                 }
             n = n->_siguiente;
         }
     }
 
-    vector<string> claves()const{
+    vector <string> claves()const{
         vector<string> claves;
         Nodo *n = _cabeza.load();
         while (n != nullptr) {
@@ -102,11 +105,11 @@ class ListaAtomica {
     unsigned int apariciones(string clave){
         Nodo *n = _cabeza.load();
         bool finded = false;
-        unsigned int apariciones = 0
+        unsigned int apariciones = 0;
         while (n != nullptr && !finded) {
             if (clave == n->_valor.first){
                 finded = true;
-                apariciones = n->_valor.second
+                apariciones = n->_valor.second;
                 }
             n = n->_siguiente;
         }
