@@ -1,1 +1,17 @@
 .vscode
+taller_de_drivers/ejemplo/.tmp_versions
+taller_de_drivers/ejemplo/.hello.ko.cmd
+taller_de_drivers/ejemplo/.hello.mod.o.cmd
+taller_de_drivers/ejemplo/.hello.o.cmd
+
+taller_de_drivers/ejemplo/hello.ko
+taller_de_drivers/ejemplo/hello.o
+taller_de_drivers/ejemplo/hello.mod.c
+taller_de_drivers/ejemplo/hello.mod.o
+
+taller_de_drivers/ejemplo/Module.symvers
+taller_de_drivers/ejemplo/modules.order
+
+
+taller_de_drivers/tests/tests-drivers
+taller_de_drivers/tests/tests-drivers.o
