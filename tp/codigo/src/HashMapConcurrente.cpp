@@ -156,8 +156,8 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla info){
             bucket_index = progreso->fetch_add(1);
     }
 
-    /*(*vector_maximos)[threadID] = maximo_local;
-    sem_post(termine_de_buscar);
+    (*vector_maximos)[threadID] = maximo_local;
+    /*sem_post(termine_de_buscar);
     sem_wait(terminar_busqueda);
     for(int i : buckets_revisados){
         sem_post(semaforos_hash[i]);
