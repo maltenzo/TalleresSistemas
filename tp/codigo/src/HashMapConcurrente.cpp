@@ -7,6 +7,7 @@
 #include <fstream>
 #include "semaphore.h"
 #include <vector>
+#include <atomic>
 
 #include "HashMapConcurrente.hpp"
 using namespace std ;
@@ -132,6 +133,38 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
 };
     // podemos hacer varias implementaciones de esto para experimentar
 
+void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla info){
+
+    int bucket_index = progreso->fetch_add(1);
+    //vector<int> buckets_revisados;
+    hashMapPair* maximo_local = nullptr;
+    //agus: por que todas estas copias?
+    //lion: pq sino no funciona/se ve re feo desde info
+    vector<sem_t*> semaforos_hash = info._sems; 
+    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
+    vector<hashMapPair*> *vector_maximos = info._maximos;
+
+    while(bucket_index < HashMapConcurrente::cantLetras){
+    //    buckets_revisados.push_back(bucket_index);
+        sem_wait(semaforos_hash[bucket_index]);
+            for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
+                    hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
+                    if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
+                        maximo_local = entrada;
+                    }
+                }
+            bucket_index = progreso->fetch_add(1);
+    }
+
+    /*(*vector_maximos)[threadID] = maximo_local;
+    sem_post(termine_de_buscar);
+    sem_wait(terminar_busqueda);
+    for(int i : buckets_revisados){
+        sem_post(semaforos_hash[i]);
+    }*/
+    
+}
+
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
@@ -141,24 +174,29 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
     //esto esta incompleto, hay que terminarlo
     vector<hashMapPair*> maximos(cant_threads);
-    int tamano_segmento = cantLetras / cant_threads;
-    vector<thread*> threads;
+    atomic<int> progreso;
+    progreso.store(0);
+    vector<thread> threads(cant_threads);
     Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
+                                                              //lion: no? tipo, si lo hablamos desde el HashMapConcurretne, es redundante.
 
     for(unsigned int id = 0; id<cant_threads; id++){
-        thread *t = new thread(maximo_en_segmento, id, tamano_segmento*id, tamano_segmento*(id+1), info);
-        threads.push_back(t);
+        threads[id] = thread(maximo_en_segmento, id, &progreso, info);
+        
     }
     
     hashMapPair max = hashMapPair("",0);
 
     
     for(unsigned int id = 0; id<cant_threads; id++){
-        (threads[id])->join(); //agus: join de un hashMapPair? no sera threads?
-        delete (maximos[id]);
+        (threads[id]).join(); //agus: join de un hashMapPair? no sera threads?
         if(max.second <= maximos[id]->second){
             max = *(maximos[id]);
         }
+    }
+
+    for(int i = 0; i<cantLetras; i++){
+        sem_post(semaforos[i]);
     }
 
     return max;
