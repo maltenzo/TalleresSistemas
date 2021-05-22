@@ -138,8 +138,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     int bucket_index = progreso->fetch_add(1);
     //vector<int> buckets_revisados;
     hashMapPair* maximo_local = nullptr;
-    //agus: por que todas estas copias?
-    //lion: pq sino no funciona/se ve re feo desde info
+
     vector<sem_t*> semaforos_hash = info->_sems; 
     ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info->_la_tabla;
     vector<hashMapPair*> *vector_maximos = info->_maximos;
@@ -168,17 +167,12 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
-    //lion: hacer cant_treads que ejecuten sobre su (1/cant_threads) de la tabla?
-    //luego ponen su resultado en un array o algo (semaforo para leerlo y escribirlo)
-    //cuando terminan, el proceso original revisa ese array y busca el máx
-    //para hacer consistente con insertar, habría que hacer que primero de todo agarre el semaforo de este?
-    //esto esta incompleto, hay que terminarlo
+    
     vector<hashMapPair*> maximos(cant_threads);
     atomic<int> progreso;
     progreso.store(0);
     vector<thread> threads(cant_threads);
-    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); //agus: no es HashMapConcurrente::semaforos? lo mismo para tabla
-                                                              //lion: no? tipo, si lo hablamos desde el HashMapConcurretne, es redundante.
+    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); 
 
     for(unsigned int id = 0; id<cant_threads; id++){
         threads[id] = thread(maximo_desde_thread, id, &progreso, &info);
@@ -189,7 +183,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
 
     
     for(unsigned int id = 0; id<cant_threads; id++){
-        (threads[id]).join(); //agus: join de un hashMapPair? no sera threads?
+        (threads[id]).join();
         if(max.second <= maximos[id]->second){
             max = *(maximos[id]);
         }

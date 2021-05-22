@@ -8,6 +8,7 @@
 //#include <pthread.h>
 
 #include <thread>
+#include <atomic>
 
 #include "CargarArchivos.hpp"
 using namespace std;
@@ -43,26 +44,38 @@ int cargarArchivo(
 }
 
 
+
+void cargarArchivosThread(HashMapConcurrente &hashMap, std::vector<std::string> filePaths, atomic<int>* progreso){
+    int file_index = progreso->fetch_add(1);
+
+    while(file_index < filePaths.size()){
+
+        cargarArchivo(hashMap, filePaths[file_index]);
+
+        file_index = progreso->fetch_add(1);
+
+    }
+
+}
+
+
 void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
                              unsigned int cantThreads,
                              std::vector<std::string> filePaths) 
 {
     // Completar (Ejercicio 4)
-        //lion: hacemos varios threads, cada uno hace cargarArchivo
-        //no se si hay que tener algo más en cuenta??
-        //agus: Me parece que no, se supone que de la consistencia de incrementar 
-        //ya se encarga la función misma
     
+    atomic<int> progreso;
+    progreso.store(0);
     vector<thread> threads(cantThreads);
     unsigned int cantidadArchivos = filePaths.size();
-    for (unsigned int i = 0; i < cantidadArchivos; i++) { 
-        threads[i] = thread(cargarArchivo, ref(hashMap), filePaths[i]);
+    for (unsigned int i = 0; i < cantThreads; i++) { 
+        threads[i] = thread(cargarArchivosThread, ref(hashMap), filePaths);
 
-        if(i==cantThreads or i==cantidadArchivos){//si ya use mi tope de threads o termine de cargar archivos le hago un wait a todos antes de continuar
-            for (auto &t : threads) { 
-            t.join();
-            }
-        }
+    }
+
+    for (auto &t : threads) { 
+    t.join();
     }
 
 }
