@@ -107,7 +107,7 @@ hashMapPair HashMapConcurrente::maximo() {
 }
 
 
-void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
+/*void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
                 
     //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
     hashMapPair* maximo_local = nullptr;
@@ -130,19 +130,19 @@ void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla 
     for(int i = tablaInicio; i< tablaFin; i++){
         sem_post(semaforos_hash[i]);
     }
-};
+};*/
     // podemos hacer varias implementaciones de esto para experimentar
 
-void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla info){
+void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
     int bucket_index = progreso->fetch_add(1);
     //vector<int> buckets_revisados;
     hashMapPair* maximo_local = nullptr;
     //agus: por que todas estas copias?
     //lion: pq sino no funciona/se ve re feo desde info
-    vector<sem_t*> semaforos_hash = info._sems; 
-    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
-    vector<hashMapPair*> *vector_maximos = info._maximos;
+    vector<sem_t*> semaforos_hash = info->_sems; 
+    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info->_la_tabla;
+    vector<hashMapPair*> *vector_maximos = info->_maximos;
 
     while(bucket_index < HashMapConcurrente::cantLetras){
     //    buckets_revisados.push_back(bucket_index);
@@ -181,7 +181,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
                                                               //lion: no? tipo, si lo hablamos desde el HashMapConcurretne, es redundante.
 
     for(unsigned int id = 0; id<cant_threads; id++){
-        threads[id] = thread(maximo_en_segmento, id, &progreso, info);
+        threads[id] = thread(maximo_desde_thread, id, &progreso, &info);
         
     }
     
