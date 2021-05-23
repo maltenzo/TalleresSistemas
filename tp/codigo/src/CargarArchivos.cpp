@@ -46,7 +46,7 @@ int cargarArchivo(
 
 
 void cargarArchivosThread(HashMapConcurrente &hashMap, std::vector<std::string> filePaths, atomic<int>* progreso){
-    int file_index = progreso->fetch_add(1);
+    unsigned int file_index = progreso->fetch_add(1);
 
     while(file_index < filePaths.size()){
 
@@ -68,9 +68,8 @@ void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
     atomic<int> progreso;
     progreso.store(0);
     vector<thread> threads(cantThreads);
-    unsigned int cantidadArchivos = filePaths.size();
     for (unsigned int i = 0; i < cantThreads; i++) { 
-        threads[i] = thread(cargarArchivosThread, ref(hashMap), filePaths);
+        threads[i] = thread(cargarArchivosThread, ref(hashMap), filePaths, &progreso);
 
     }
 
