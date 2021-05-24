@@ -27,7 +27,7 @@ class HashMapConcurrente {
     hashMapPair maximoParalelo(unsigned int cantThreads);
 
  private:
-    ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
+    ListaAtomica<hashMapPair> tabla[HashMapConcurrente::cantLetras];
     vector<sem_t*> semaforos;
 
     static unsigned int hashIndex(std::string clave);

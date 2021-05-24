@@ -9,19 +9,19 @@
 #include "HashMapConcurrente.hpp"
 
 struct Info_Tabla{
-    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, void *tabla_hash )
+    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, ListaAtomica<hashMapPair> *tabla_hash )
     : _maximos(maxs), _sems(semaforos_hash), _la_tabla(tabla_hash) {}
 
     vector<hashMapPair*> *_maximos;
     vector<sem_t*> _sems;
-    void *_la_tabla;
+    ListaAtomica<hashMapPair> *_la_tabla;
 };
 
 
 HashMapConcurrente::HashMapConcurrente() {
 
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
-        tabla[i] = new ListaAtomica<hashMapPair>();
+        //tabla[i] = new ListaAtomica<hashMapPair>();
         //inicializamos los semaforos
         sem_t* semaforo = new sem_t();
         sem_init(semaforo, 0, 1);
@@ -46,7 +46,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
     // Completar (Ejercicio 2)
         //lion: usamos un semaforo que empieza en 1, asi bloqueamos lectura, creación y escritura del bucket accedido.
         int indice_tabla = hashIndex(clave); 
-        ListaAtomica<hashMapPair>* lista = tabla[indice_tabla];
+        ListaAtomica<hashMapPair>* lista = &tabla[indice_tabla];
         
         sem_wait(semaforos[indice_tabla]);
             if (!lista->find(clave))
@@ -67,7 +67,7 @@ std::vector<std::string> HashMapConcurrente::claves() {
         //agus: tal vez se la podría optimizar con threads?
     vector<string> las_claves; 
     for(unsigned int i = 0; i<cantLetras; i++){
-        vector<string> claves_i = tabla[i]->claves();
+        vector<string> claves_i = tabla[i].claves();
         las_claves.insert(las_claves.end(), std::begin(claves_i), std::end(claves_i));
     }
     return las_claves;    
@@ -77,7 +77,7 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
     // Completar (Ejercicio 2)
         //lion: mismo que claves, solo lo hace y ya
     int indice_tabla = hashIndex(clave); 
-    ListaAtomica<hashMapPair>* lista = tabla[indice_tabla];
+    ListaAtomica<hashMapPair>* lista = &tabla[indice_tabla];
     int valor = lista->apariciones(clave);
     return valor;
 }
@@ -89,7 +89,7 @@ hashMapPair HashMapConcurrente::maximo() {
     //for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
         sem_wait(semaforos[index]);
-        for(auto &p : *tabla[index]){
+        for(auto &p : tabla[index]){
             if (p.second > max->second) {
                 max->first = p.first;
                 max->second = p.second;
@@ -134,10 +134,9 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     //vector<int> buckets_revisados;
 
     vector<sem_t*> semaforos_hash = info->_sems; 
-    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info->_la_tabla;
+    ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
     vector<hashMapPair*> *vector_maximos = info->_maximos;
-    hashMapPair* maximo_local = &(tabla_hash[bucket_index][0]);
-    
+    hashMapPair* maximo_local = nullptr;
 
 
     while(bucket_index < HashMapConcurrente::cantLetras){
@@ -148,11 +147,14 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
             for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
                 
-                if(entrada->second >= maximo_local->second){
+                if( maximo_local == nullptr || entrada->second >= maximo_local->second){
                     maximo_local = entrada;
                 }
             }
             bucket_index = progreso->fetch_add(1);
+    }
+    if(maximo_local == nullptr){
+        maximo_local = new hashMapPair("", 0);
     }
 
     (*vector_maximos)[threadID] = maximo_local;

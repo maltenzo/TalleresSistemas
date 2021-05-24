@@ -28,7 +28,7 @@ build:
 	@mkdir -p $(BUILD_DIR)
 
 debug: CXXFLAGS += -DDEBUG -g
-debug: all
+debug: test#all
 
 clean:
 	-@rm -rvf $(BUILD_DIR)/*
