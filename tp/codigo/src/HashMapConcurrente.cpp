@@ -5,12 +5,8 @@
 // alternativamente #include <pthread.h>
 #include <iostream>
 #include <fstream>
-#include "semaphore.h"
-#include <vector>
-#include <atomic>
 
 #include "HashMapConcurrente.hpp"
-using namespace std ;
 
 struct Info_Tabla{
     Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, void *tabla_hash )
@@ -27,7 +23,7 @@ HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
         tabla[i] = new ListaAtomica<hashMapPair>();
         //inicializamos los semaforos
-        sem_t* semaforo;
+        sem_t* semaforo = new sem_t();
         sem_init(semaforo, 0, 1);
         semaforos.push_back(semaforo);
     }
@@ -55,7 +51,8 @@ void HashMapConcurrente::incrementar(std::string clave) {
         sem_wait(semaforos[indice_tabla]);
             if (!lista->find(clave))
             {
-                lista->insertar( hashMapPair(clave,1) );
+                hashMapPair nuevoPar = hashMapPair(clave,1);
+                lista->insertar(nuevoPar);
             }else
             {       
                 lista->incrementar(clave);
@@ -85,11 +82,8 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
     return valor;
 }
 
-hashMapPair HashMapConcurrente::maximo() { 
-        //lion: habría que usar el mismo semaforo que usa insertar. Para que que sea el maximo de un momento de ejecución
-        // preguntar inconsistencias  
-        //agus: cabe aclarar que se bloquean los semaforos uno a uno permitiendo que se realice cualquier cambio posterior a la lista 
-        // que está siendo analizada y luego se devuelven todos juntos.
+
+hashMapPair HashMapConcurrente::maximo() {
     hashMapPair* max = new hashMapPair();
     max->second = 0;
     //for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
@@ -105,6 +99,7 @@ hashMapPair HashMapConcurrente::maximo() {
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_post(semaforos[index]);}
     return *max;
 }
+
 
 
 /*void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
@@ -137,21 +132,26 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
     int bucket_index = progreso->fetch_add(1);
     //vector<int> buckets_revisados;
-    hashMapPair* maximo_local = nullptr;
 
     vector<sem_t*> semaforos_hash = info->_sems; 
     ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info->_la_tabla;
     vector<hashMapPair*> *vector_maximos = info->_maximos;
+    hashMapPair* maximo_local = &(tabla_hash[bucket_index][0]);
+    
+
 
     while(bucket_index < HashMapConcurrente::cantLetras){
     //    buckets_revisados.push_back(bucket_index);
+
+        
         sem_wait(semaforos_hash[bucket_index]);
             for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
-                    hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
-                    if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
-                        maximo_local = entrada;
-                    }
+                hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
+                
+                if(entrada->second >= maximo_local->second){
+                    maximo_local = entrada;
                 }
+            }
             bucket_index = progreso->fetch_add(1);
     }
 
@@ -196,6 +196,5 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     return max;
             
 }
-
 
 #endif

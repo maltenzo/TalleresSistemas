@@ -7,8 +7,6 @@
 #include <vector>
 using namespace std;
 
-
-
 template<typename T>
 class ListaAtomica {
  private:
@@ -38,17 +36,13 @@ class ListaAtomica {
     void insertar(const T &valor) {
         // Completar (Ejercicio 1)
         //preparar nodo
-        Nodo nuevoNodo = Nodo(valor);
+        Nodo* nuevoNodo = new Nodo(valor);
         mutex_insertar.lock();
             //editar lista
-            nuevoNodo._siguiente = _cabeza;
-            _cabeza = &nuevoNodo;
+            nuevoNodo->_siguiente = _cabeza;
+            _cabeza = nuevoNodo;
 
         mutex_insertar.unlock();
-
-        
-        //lion : usar un mutex, para que solo edite un thread a la vez
-                //podemos preparar el nodo a ser insertado afuera del mutex, y solo lockeamos el cambio de cabeza y asignar cabeza previa como sig.
     }
 
     T& operator[](size_t i) const {
@@ -68,23 +62,22 @@ class ListaAtomica {
         }
         return cant;
     }
-
-    bool find(string clave) const{
+        bool find(string clave) const{
         Nodo *n = _cabeza.load();
-        bool finded = false;
-        while (n != nullptr && !finded) {
-            if (clave == n->_valor.first){finded = true;}
+        bool found = false;
+        while (n != nullptr && !found) {
+            if (clave == n->_valor.first){found = true;}
             n = n->_siguiente;
         }
-        return finded;
+        return found;
     }
 
-     void incrementar(string clave) const{
+    void incrementar(string clave) const{
         Nodo *n = _cabeza.load();
-        bool finded = false;
-        while (n != nullptr && !finded) {
+        bool found = false;
+        while (n != nullptr && !found) {
             if (clave == n->_valor.first){
-                finded = true;
+                found = true;
                 n->_valor.second++;
                 }
             n = n->_siguiente;
@@ -104,11 +97,11 @@ class ListaAtomica {
 
     unsigned int apariciones(string clave){
         Nodo *n = _cabeza.load();
-        bool finded = false;
+        bool found = false;
         unsigned int apariciones = 0;
-        while (n != nullptr && !finded) {
+        while (n != nullptr && !found) {
             if (clave == n->_valor.first){
-                finded = true;
+                found = true;
                 apariciones = n->_valor.second;
                 }
             n = n->_siguiente;
