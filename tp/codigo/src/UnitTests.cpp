@@ -275,9 +275,16 @@ LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConIncrementar)
 
 LT_END_TEST(HashMapNoTieneRaceConditionsConIncrementar)
 
+LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConMaximo)
+
+    vector<string> elementos = {"aaa","aab","aba", "baa", "bab", "bba", "caa", "cab", "cba", "d"};
+    testHashMaximo(elementos, hM);
+
+LT_END_TEST(HashMapNoTieneRaceConditionsConMaximo)
+
 LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
     bool res = testConcurrenciaCargaArchivos(hM, hm2);
-    LT_CHECK_EQ(res, true);
+    LT_CHECK(res);
 
 LT_END_TEST(HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
 
