@@ -1,9 +1,11 @@
 #include <vector>
+#include <thread>
 #include "lib/littletest.hpp"
 
 #include "../src/ListaAtomica.hpp"
 #include "../src/HashMapConcurrente.hpp"
 #include "../src/CargarArchivos.hpp"
+#include "../src/TestsConcurrencia.cpp"
 
 // Tests Ejercicio 1
 
@@ -223,6 +225,60 @@ LT_BEGIN_TEST(TestsEjercicio4, CargarMultiplesArchivosFuncionaDosThreads)
     LT_CHECK_EQ(hM.valor("estegosaurio"), 4);
     LT_CHECK_EQ(hM.claves().size(), 12);
 LT_END_TEST(CargarMultiplesArchivosFuncionaDosThreads)
+
+
+using namespace std;
+
+LT_BEGIN_SUITE(TestsConcurrencia)
+
+    ListaAtomica<int> l;
+    HashMapConcurrente hM;
+
+    void set_up()
+    {
+    }
+
+    void tear_down()
+    {
+    }
+
+LT_END_SUITE()
+
+
+
+LT_BEGIN_TEST(TestsConcurrencia, ListaAtomicaNoTieneRaceConditions)
+
+    testLista(l);
+
+    LT_CHECK_EQ(l.longitud(), 100000);
+
+    vector<int> elementos(100,0);
+
+    for(int i = 0; i<10000; i++){
+        elementos[l[i]]++;
+        LT_CHECK_LTE(elementos[l[i]], 1000);
+    }
+
+LT_END_TEST(ListaAtomicaNoTieneRaceConditions)
+
+
+LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConIncrementar)
+
+    vector<string> elementos = {"aaa","aab","aba", "baa", "bab", "bba", "caa", "cab", "cba", "d"};
+    testHashIncrementar(elementos, hM);
+
+    LT_CHECK_EQ(hM.claves().size(), 10);
+    for(int i = 0; i<10; i++){
+        LT_CHECK_EQ(hM.valor(elementos[i]), 10000);
+    }
+
+LT_END_TEST(HashMapNoTieneRaceConditionsConIncrementar)
+
+LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
+
+
+LT_END_TEST(HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
+
 
 // Ejecutar tests
 LT_BEGIN_AUTO_TEST_ENV()
