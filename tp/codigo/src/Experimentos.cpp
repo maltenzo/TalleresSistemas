@@ -57,7 +57,7 @@ void experimentoCargarArchivos(bool secuencial){
     }else{
 
         cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
-        
+
     }
 
     // calculo cuanto tardó la ejecución
@@ -68,7 +68,7 @@ void experimentoCargarArchivos(bool secuencial){
 }
 
 
-void experimentoAmbos(){
+void experimentoAmbos(){ 
 
 
     // inicio el reloj para medir la duración del algoritmo
