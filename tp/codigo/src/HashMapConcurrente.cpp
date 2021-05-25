@@ -8,14 +8,21 @@
 
 #include "HashMapConcurrente.hpp"
 
-struct Info_Tabla{
+/*struct Info_Tabla{
     Info_Tabla(vector<hashMapPair*> *maxs, ListaAtomica<hashMapPair> *tabla_hash )
     : _maximos(maxs), _la_tabla(tabla_hash) {}
 
     vector<hashMapPair*> *_maximos;
     ListaAtomica<hashMapPair> *_la_tabla;
-};
+};*/
+struct Info_Tabla{
+    Info_Tabla(hashMapPair* maxs, mutex* m, ListaAtomica<hashMapPair> *tabla_hash )
+    : _maximo(maxs), _m(m), _la_tabla(tabla_hash) {}
 
+    hashMapPair* _maximo;
+    mutex* _m;
+    ListaAtomica<hashMapPair> *_la_tabla;
+};
 
 HashMapConcurrente::HashMapConcurrente() {
 
@@ -134,7 +141,8 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
     //vector<sem_t*> semaforos_hash = info->_sems; 
     ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
-    vector<hashMapPair*> *vector_maximos = info->_maximos;
+    mutex* puedoUsarElMaximo = info->_m;
+    hashMapPair* maximo = info->_maximo;
     hashMapPair* maximo_local = nullptr;
 
 
@@ -153,11 +161,17 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
             bucket_index = progreso->fetch_add(1);
 
     }
+
     if(maximo_local == nullptr){
         maximo_local = new hashMapPair("", 0);
     }
 
-    (*vector_maximos)[threadID] = maximo_local;
+    puedoUsarElMaximo->lock();
+        if(maximo->second <= maximo_local->second){
+            *maximo = *maximo_local;
+        }
+    puedoUsarElMaximo->unlock();
+    //(*vector_maximos)[threadID] = maximo_local;
     /*sem_post(termine_de_buscar);
     sem_wait(terminar_busqueda);
     for(int i : buckets_revisados){
@@ -170,11 +184,12 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
     
-    vector<hashMapPair*> maximos(cant_threads);
+    //vector<hashMapPair*> maximos(cant_threads);
+    hashMapPair max = hashMapPair("",0);
     atomic<int> progreso;
     progreso.store(0);
     vector<thread> threads(cant_threads);
-    Info_Tabla info = Info_Tabla(&maximos, tabla); 
+    Info_Tabla info = Info_Tabla(&max, &puedoUsarElMax, tabla); 
 
     for(int i = 0; i<cantLetras; i++){
         sem_wait(semaforos[i]);
@@ -185,14 +200,14 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
         
     }
     
-    hashMapPair max = hashMapPair("",0);
+    //hashMapPair max = hashMapPair("",0);
 
     
     for(unsigned int id = 0; id<cant_threads; id++){
         (threads[id]).join();
-        if(max.second <= maximos[id]->second){
+        /*if(max.second <= maximos[id]->second){
             max = *(maximos[id]);
-        }
+        }*/
     }
 
     for(int i = 0; i<cantLetras; i++){
