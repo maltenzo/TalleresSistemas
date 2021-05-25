@@ -280,6 +280,11 @@ LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConMaximo)
     vector<string> elementos = {"aaa","aab","aba", "baa", "bab", "bba", "caa", "cab", "cba", "d"};
     testHashMaximo(elementos, hM);
 
+    LT_CHECK_EQ(hM.claves().size(), 10);
+    for(int i = 0; i<10; i++){
+        LT_CHECK_EQ(hM.valor(elementos[i]), 10000);
+    }    
+
 LT_END_TEST(HashMapNoTieneRaceConditionsConMaximo)
 
 LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)

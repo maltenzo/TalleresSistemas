@@ -46,8 +46,12 @@ void testHashIncrementar(vector<string> elementos, HashMapConcurrente& hM){
     }
 }
 
-void insertarYMaximoEnHash(string s, HashMapConcurrente& hM){
-    
+void insertarYMaximoEnHash(string s, HashMapConcurrente& m){
+    for(int i = 0; i<1000; i++){
+        m.incrementar(s);
+        m.maximoParalelo(4);
+
+    }
 }
 
 void testHashMaximo(vector<string> elementos, HashMapConcurrente& hM){
@@ -71,7 +75,7 @@ bool testConcurrenciaCargaArchivos(HashMapConcurrente& hM, HashMapConcurrente& h
     bool clavesSonProporcionales = true;
     bool tienenLasMismasClaves = (hM.claves().size() == hm2.claves().size());
     for(auto clave : hm2.claves()){
-        if(4 * hM.valor(clave) != hm2.valor(clave)){
+        if(hM.valor(clave) != 4 *hm2.valor(clave)){
             clavesSonProporcionales = false;
             tienenLasMismasClaves = false;
         }
