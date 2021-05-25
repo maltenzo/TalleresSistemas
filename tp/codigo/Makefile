@@ -6,10 +6,13 @@ BUILD_DIR = ./build
 
 TARGET = ContarPalabras
 TEST_TARGET = UnitTests
+EXPERIMENTOS_TARGET = Experimentos
 
 OBJECTS = HashMapConcurrente.o CargarArchivos.o
 
 all: build $(BUILD_DIR)/$(TARGET)
+
+experimentos: build $(BUILD_DIR)/$(EXPERIMENTOS_TARGET)
 
 test: build $(BUILD_DIR)/$(TEST_TARGET)
 	$(BUILD_DIR)/$(TEST_TARGET)
