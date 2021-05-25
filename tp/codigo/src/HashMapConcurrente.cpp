@@ -133,7 +133,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     int bucket_index = progreso->fetch_add(1);
     //vector<int> buckets_revisados;
 
-    vector<sem_t*> semaforos_hash = info->_sems; 
+    //vector<sem_t*> semaforos_hash = info->_sems; 
     ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
     vector<hashMapPair*> *vector_maximos = info->_maximos;
     hashMapPair* maximo_local = nullptr;
@@ -143,7 +143,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     //    buckets_revisados.push_back(bucket_index);
 
         
-        sem_wait(semaforos_hash[bucket_index]);
+        //sem_wait(semaforos_hash[bucket_index]);
             for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
                 
@@ -152,6 +152,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
                 }
             }
             bucket_index = progreso->fetch_add(1);
+
     }
     if(maximo_local == nullptr){
         maximo_local = new hashMapPair("", 0);
@@ -175,6 +176,10 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     progreso.store(0);
     vector<thread> threads(cant_threads);
     Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); 
+
+    for(int i = 0; i<cantLetras; i++){
+        sem_wait(semaforos[i]);
+    }
 
     for(unsigned int id = 0; id<cant_threads; id++){
         threads[id] = thread(maximo_desde_thread, id, &progreso, &info);
