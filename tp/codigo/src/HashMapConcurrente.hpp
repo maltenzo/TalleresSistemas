@@ -29,6 +29,7 @@ class HashMapConcurrente {
  private:
     ListaAtomica<hashMapPair> tabla[HashMapConcurrente::cantLetras];
     vector<sem_t*> semaforos;
+    mutex puedoUsarElMax;
 
     static unsigned int hashIndex(std::string clave);
 };
