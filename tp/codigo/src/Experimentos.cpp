@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     cantThreadsMaximo = std::stoi(argv[4]);
 
     
-    for (int i = 3; i < argc; i++) {
+    for (int i = 5; i < argc; i++) {
         filePaths.push_back(argv[i]);
     }
 
