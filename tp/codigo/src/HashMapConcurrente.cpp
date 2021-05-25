@@ -9,11 +9,10 @@
 #include "HashMapConcurrente.hpp"
 
 struct Info_Tabla{
-    Info_Tabla(vector<hashMapPair*> *maxs, vector<sem_t*> semaforos_hash, ListaAtomica<hashMapPair> *tabla_hash )
-    : _maximos(maxs), _sems(semaforos_hash), _la_tabla(tabla_hash) {}
+    Info_Tabla(vector<hashMapPair*> *maxs, ListaAtomica<hashMapPair> *tabla_hash )
+    : _maximos(maxs), _la_tabla(tabla_hash) {}
 
     vector<hashMapPair*> *_maximos;
-    vector<sem_t*> _sems;
     ListaAtomica<hashMapPair> *_la_tabla;
 };
 
@@ -175,7 +174,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     atomic<int> progreso;
     progreso.store(0);
     vector<thread> threads(cant_threads);
-    Info_Tabla info = Info_Tabla(&maximos, semaforos, tabla); 
+    Info_Tabla info = Info_Tabla(&maximos, tabla); 
 
     for(int i = 0; i<cantLetras; i++){
         sem_wait(semaforos[i]);
