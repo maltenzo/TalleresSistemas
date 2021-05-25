@@ -11,16 +11,26 @@
 
 double tiempoDeEjecucion;
 
+std::vector<std::string> filePaths = {};
+
+int cantThreadsLectura;
+int cantThreadsMaximo;
+
 
 void experimentoMaximo(bool secuencial){
+
+    HashMapConcurrente hashMap{};
+
+    cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
 
     // inicio el reloj para medir la duración del algoritmo
     auto start = chrono::steady_clock::now();
 
     if (secuencial){
+        hashMap.maximo();
 
     }else{
-
+        hashMap.maximoParalelo(cantThreadsMaximo);
     }
 
     // calculo cuanto tardó la ejecución
@@ -32,14 +42,22 @@ void experimentoMaximo(bool secuencial){
 }
 
 void experimentoCargarArchivos(bool secuencial){
+    HashMapConcurrente hashMap{};
 
     // inicio el reloj para medir la duración del algoritmo
     auto start = chrono::steady_clock::now();
 
     if (secuencial){
 
+        for(auto path : filePaths){
+            cargarArchivo(hashMap, path);
+        }
+
+
     }else{
 
+        cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
+        
     }
 
     // calculo cuanto tardó la ejecución
@@ -89,10 +107,10 @@ int main(int argc, char **argv) {
         secuencial = true;
     }
 
-    int cantThreadsLectura = std::stoi(argv[3]);
-    int cantThreadsMaximo = std::stoi(argv[4]);
+    cantThreadsLectura = std::stoi(argv[3]);
+    cantThreadsMaximo = std::stoi(argv[4]);
 
-    std::vector<std::string> filePaths = {};
+    
     for (int i = 3; i < argc; i++) {
         filePaths.push_back(argv[i]);
     }
