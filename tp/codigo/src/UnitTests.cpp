@@ -233,6 +233,7 @@ LT_BEGIN_SUITE(TestsConcurrencia)
 
     ListaAtomica<int> l;
     HashMapConcurrente hM;
+    HashMapConcurrente hm2;
 
     void set_up()
     {
@@ -275,7 +276,8 @@ LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConIncrementar)
 LT_END_TEST(HashMapNoTieneRaceConditionsConIncrementar)
 
 LT_BEGIN_TEST(TestsConcurrencia, HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
-
+    bool res = testConcurrenciaCargaArchivos(hM, hm2);
+    LT_CHECK_EQ(res, true);
 
 LT_END_TEST(HashMapNoTieneRaceConditionsConCargarMultiplesArchivos)
 

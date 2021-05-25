@@ -46,11 +46,11 @@ void testHashIncrementar(vector<string> elementos, HashMapConcurrente& hM){
     }
 }
 
-void testConcurrenciaCargaArchivos(HashMapConcurrente hM){
-    HashMapConcurrente hm2 ;
+bool testConcurrenciaCargaArchivos(HashMapConcurrente& hM, HashMapConcurrente& hm2){
+
     cargarMultiplesArchivos(hm2, 1, {"data/corpus"});
     cargarMultiplesArchivos(hM, 4, {"data/corpus", "data/corpus","data/corpus", "data/corpus" });
 
-    //return (hm2.maximo().first() == hM.maximo()->first());
-    //return true;
+    return (hm2.maximo().first == hM.maximo().first);
+    
 }
