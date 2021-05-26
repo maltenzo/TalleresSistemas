@@ -109,32 +109,6 @@ hashMapPair HashMapConcurrente::maximo() {
 
 
 
-/*void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
-                
-    //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
-    hashMapPair* maximo_local = nullptr;
-    int index_tabla = tablaInicio;
-    vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
-    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
-    vector<hashMapPair*> *vector_maximos = info._maximos;
-
-    while(index_tabla < tablaFin){
-        sem_wait(semaforos_hash[index_tabla]);
-            for(unsigned int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
-                hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
-                if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
-                    maximo_local = entrada;
-                }
-            }
-    }
-
-    (*vector_maximos)[threadID] = maximo_local;
-    for(int i = tablaInicio; i< tablaFin; i++){
-        sem_post(semaforos_hash[i]);
-    }
-};*/
-    // podemos hacer varias implementaciones de esto para experimentar
-
 void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
     int bucket_index = progreso->fetch_add(1);
@@ -226,5 +200,37 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     return max;
             
 }
+
+
+
+
+
+
+/*void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
+                
+    //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
+    hashMapPair* maximo_local = nullptr;
+    int index_tabla = tablaInicio;
+    vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
+    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
+    vector<hashMapPair*> *vector_maximos = info._maximos;
+
+    while(index_tabla < tablaFin){
+        sem_wait(semaforos_hash[index_tabla]);
+            for(unsigned int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
+                hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
+                if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
+                    maximo_local = entrada;
+                }
+            }
+    }
+
+    (*vector_maximos)[threadID] = maximo_local;
+    for(int i = tablaInicio; i< tablaFin; i++){
+        sem_post(semaforos_hash[i]);
+    }
+};*/
+    // podemos hacer varias implementaciones de esto para experimentar
+
 
 #endif
