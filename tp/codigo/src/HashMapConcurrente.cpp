@@ -103,6 +103,7 @@ hashMapPair HashMapConcurrente::maximo() {
         }
     }
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_post(semaforos[index]);}
+    cout << max->first << endl;
     return *max;
 }
 
@@ -143,32 +144,40 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
     mutex* puedoUsarElMaximo = info->_m;
     hashMapPair* maximo = info->_maximo;
-    hashMapPair* maximo_local = nullptr;
+    hashMapPair *maximo_local = new hashMapPair("", 0);
 
 
     while(bucket_index < HashMapConcurrente::cantLetras){
     //    buckets_revisados.push_back(bucket_index);
 
+        for (auto &entrada : tabla_hash[bucket_index])
+        {
+             if( entrada.second > maximo_local->second){
+                    maximo_local = &entrada;
+                }
+        }
         
         //sem_wait(semaforos_hash[bucket_index]);
+            /*
             for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
                 
-                if( maximo_local == nullptr || entrada->second >= maximo_local->second){
-                    maximo_local = entrada;
+                if( entrada->second >= maximo_local.second){
+                    maximo_local = *entrada;
                 }
             }
-            bucket_index = progreso->fetch_add(1);
+            */
+        bucket_index = progreso->fetch_add(1);
 
     }
 
-    if(maximo_local == nullptr){
-        maximo_local = new hashMapPair("", 0);
-    }
+   
 
     puedoUsarElMaximo->lock();
-        if(maximo->second <= maximo_local->second){
-            *maximo = *maximo_local;
+        if(maximo->second < maximo_local->second){
+            maximo = maximo_local;
+            cout<< maximo->first<<endl;
+            cout<< maximo->second<<endl;
         }
     puedoUsarElMaximo->unlock();
     //(*vector_maximos)[threadID] = maximo_local;
@@ -213,7 +222,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     for(int i = 0; i<cantLetras; i++){
         sem_post(semaforos[i]);
     }
-
+    cout << max.second << endl;
     return max;
             
 }

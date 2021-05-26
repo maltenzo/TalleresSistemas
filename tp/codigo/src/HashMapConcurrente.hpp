@@ -24,6 +24,7 @@ class HashMapConcurrente {
     unsigned int valor(std::string clave);
 
     hashMapPair maximo();
+   
     hashMapPair maximoParalelo(unsigned int cantThreads);
 
  private:
