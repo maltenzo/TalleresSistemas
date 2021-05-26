@@ -195,7 +195,6 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     for(int i = 0; i<cantLetras; i++){
         sem_post(semaforos[i]);
     }
-    //cout << max.second << endl;
     return *max;
             
 }
