@@ -1,2 +1,11 @@
 n,experimento,es_secuencial,cantThreadsLectura,cantThreadsMaximo,tiempo
-2,maximo,Si,1,1,3.3396
+1,maximo,Si,1,1,0.2257
+2,maximo,Si,1,1,0.3438335
+3,maximo,Si,1,1,0.429196
+4,maximo,Si,1,1,0.616055
+5,maximo,Si,1,1,0.771962
+6,maximo,Si,1,1,0.923392
+7,maximo,Si,1,1,0.995361
+8,maximo,Si,1,1,1.09525
+9,maximo,Si,1,1,1.13386
+10,maximo,Si,1,1,1.316905
