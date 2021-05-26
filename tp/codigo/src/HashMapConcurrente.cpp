@@ -103,7 +103,7 @@ hashMapPair HashMapConcurrente::maximo() {
         }
     }
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_post(semaforos[index]);}
-    cout << max->first << endl;
+    //cout << max->first << endl;
     return *max;
 }
 
@@ -124,7 +124,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     while(bucket_index < HashMapConcurrente::cantLetras){
     //    buckets_revisados.push_back(bucket_index);
 
-        for (auto &entrada : tabla_hash[bucket_index])
+        for (hashMapPair &entrada : tabla_hash[bucket_index])
         {
              if( entrada.second > maximo_local->second){
                     maximo_local = &entrada;
@@ -149,9 +149,9 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
 
     puedoUsarElMaximo->lock();
         if(maximo->second < maximo_local->second){
-            maximo = maximo_local;
-            cout<< maximo->first<<endl;
-            cout<< maximo->second<<endl;
+            *maximo = *maximo_local;
+            //cout<< maximo->first<<endl;
+            //cout<< maximo->second<<endl;
         }
     puedoUsarElMaximo->unlock();
     //(*vector_maximos)[threadID] = maximo_local;
@@ -196,7 +196,7 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     for(int i = 0; i<cantLetras; i++){
         sem_post(semaforos[i]);
     }
-    cout << max.second << endl;
+    //cout << max.second << endl;
     return max;
             
 }
