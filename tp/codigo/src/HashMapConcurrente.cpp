@@ -118,7 +118,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
     ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
     mutex* puedoUsarElMaximo = info->_m;
     hashMapPair* maximo = info->_maximo;
-    hashMapPair *maximo_local = new hashMapPair("", 0);
+    hashMapPair* maximo_local = new hashMapPair("", 0);
 
 
     while(bucket_index < HashMapConcurrente::cantLetras){
@@ -130,17 +130,17 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, Info_Tabla* info){
                     maximo_local = &entrada;
                 }
         }
-        
+       
         //sem_wait(semaforos_hash[bucket_index]);
-            /*
+         /*   
             for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
                 hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
                 
-                if( entrada->second >= maximo_local.second){
-                    maximo_local = *entrada;
+                if( entrada->second >= maximo_local->second){
+                    maximo_local = entrada;
                 }
             }
-            */
+           */  
         bucket_index = progreso->fetch_add(1);
 
     }
