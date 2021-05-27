@@ -55,7 +55,6 @@ void insertarYMaximoEnHash(string s, HashMapConcurrente& m){
 }
 
 void testHashMaximo(vector<string> elementos, HashMapConcurrente& hM){
-    //penis
     vector<thread> threads(100);
     for(int i = 100; i>0; i--){
         threads[i-1] = thread(insertarYMaximoEnHash, elementos[i%10], ref(hM));

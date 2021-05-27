@@ -229,6 +229,8 @@ LT_END_TEST(CargarMultiplesArchivosFuncionaDosThreads)
 
 using namespace std;
 
+
+
 LT_BEGIN_SUITE(TestsConcurrencia)
 
     ListaAtomica<int> l;
@@ -237,6 +239,7 @@ LT_BEGIN_SUITE(TestsConcurrencia)
 
     void set_up()
     {
+        
     }
 
     void tear_down()
@@ -248,7 +251,7 @@ LT_END_SUITE()
 
 
 LT_BEGIN_TEST(TestsConcurrencia, ListaAtomicaNoTieneRaceConditions)
-
+    printf("ESTE ES EL PRIMERO DE NUESTROS TESTS \n");
     testLista(l);
 
     LT_CHECK_EQ(l.longitud(), 100000);
