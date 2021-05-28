@@ -47,6 +47,7 @@ int cargarArchivo(
 
 
 void cargarArchivosThread(HashMapConcurrente &hashMap, std::vector<std::string> filePaths, atomic<int>* progreso){
+    //usando el int atómico como indice, buscamos el archivo que hace falta cargar y llamamos a cargarArchivo.
     unsigned int file_index = progreso->fetch_add(1);
 
     while(file_index < filePaths.size()){
@@ -65,7 +66,7 @@ void cargarMultiplesArchivos(HashMapConcurrente &hashMap,
                              std::vector<std::string> filePaths) 
 {
     // Completar (Ejercicio 4)
-    
+    //llamamos threads para que carguen archivos
     atomic<int> progreso;
     progreso.store(0);
     vector<thread> threads(cantThreads);

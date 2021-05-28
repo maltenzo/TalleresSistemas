@@ -8,13 +8,6 @@
 
 #include "HashMapConcurrente.hpp"
 
-/*struct Info_Tabla{
-    Info_Tabla(vector<hashMapPair*> *maxs, ListaAtomica<hashMapPair> *tabla_hash )
-    : _maximos(maxs), _la_tabla(tabla_hash) {}
-
-    vector<hashMapPair*> *_maximos;
-    ListaAtomica<hashMapPair> *_la_tabla;
-};*/
 struct Info_Tabla{
     Info_Tabla( mutex* m, ListaAtomica<hashMapPair> *tabla_hash )
     : _m(m), _la_tabla(tabla_hash) {}
@@ -26,7 +19,6 @@ struct Info_Tabla{
 HashMapConcurrente::HashMapConcurrente() {
 
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
-        //tabla[i] = new ListaAtomica<hashMapPair>();
         //inicializamos los semaforos
         sem_t* semaforo = new sem_t();
         sem_init(semaforo, 0, 1);
@@ -35,7 +27,7 @@ HashMapConcurrente::HashMapConcurrente() {
     
 }
 
-
+//destructor para destruir los semaforos usados
 HashMapConcurrente::~HashMapConcurrente(){
      for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
          sem_destroy(semaforos[i]);
@@ -49,7 +41,8 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 
 void HashMapConcurrente::incrementar(std::string clave) {
     // Completar (Ejercicio 2)
-        //lion: usamos un semaforo que empieza en 1, asi bloqueamos lectura, creación y escritura del bucket accedido.
+        //buscamos si la clave ya fué registrada. caso de que no, insertamos un nuevo nodo. Caso que si, incrementamos el existente
+        //usamos un semaforo que empieza en 1, asi bloqueamos lectura, creación y escritura del bucket accedido.
         int indice_tabla = hashIndex(clave); 
         ListaAtomica<hashMapPair>* lista = &tabla[indice_tabla];
         
@@ -68,8 +61,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
  
 std::vector<std::string> HashMapConcurrente::claves() {
     // Completar (Ejercicio 2)
-        //lion: solo dejamos que lea todo, no? sin semaforos ni nada.
-        //agus: tal vez se la podría optimizar con threads?
+        //buscamos todas las claves registradas en cada bucket del HashMap
     vector<string> las_claves; 
     for(unsigned int i = 0; i<cantLetras; i++){
         vector<string> claves_i = tabla[i].claves();
@@ -80,7 +72,7 @@ std::vector<std::string> HashMapConcurrente::claves() {
 
 unsigned int HashMapConcurrente::valor(std::string clave) {
     // Completar (Ejercicio 2)
-        //lion: mismo que claves, solo lo hace y ya
+        //buscamos el par de la clave y devolvemos su valor
     int indice_tabla = hashIndex(clave); 
     ListaAtomica<hashMapPair>* lista = &tabla[indice_tabla];
     int valor = lista->apariciones(clave);
@@ -91,7 +83,7 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 hashMapPair HashMapConcurrente::maximo() {
     hashMapPair* max = new hashMapPair();
     max->second = 0;
-    //for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_wait(semaforos[index]);}
+    //tomamos el semaforo antes de entrar a cada bucket para buscar el maximo
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
         sem_wait(semaforos[index]);
         for(auto &p : tabla[index]){
@@ -102,7 +94,6 @@ hashMapPair HashMapConcurrente::maximo() {
         }
     }
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {sem_post(semaforos[index]);}
-    //cout << max->first << endl;
     return *max;
 }
 
@@ -111,54 +102,31 @@ hashMapPair HashMapConcurrente::maximo() {
 void maximo_desde_thread(int threadID, atomic<int>* progreso, hashMapPair*& maximo, Info_Tabla* info){
 
     int bucket_index = progreso->fetch_add(1);
-    //vector<int> buckets_revisados;
 
-    //vector<sem_t*> semaforos_hash = info->_sems; 
     ListaAtomica<hashMapPair>* tabla_hash = info->_la_tabla;
     mutex* puedoUsarElMaximo = info->_m;
-    //hashMapPair* maximo = info->_maximo;
     hashMapPair* maximo_local = new hashMapPair("", 0);
 
-
+    //buscamos el maximo local de los buckets que revisamos
+    //usamos el int atómico como indice para saber que buckets revisar
     while(bucket_index < HashMapConcurrente::cantLetras){
-    //    buckets_revisados.push_back(bucket_index);
-
         for (hashMapPair &entrada : tabla_hash[bucket_index])
         {
              if( entrada.second > maximo_local->second){
                     maximo_local = &entrada;
                 }
         }
-       
-        //sem_wait(semaforos_hash[bucket_index]);
-         /*   
-            for(unsigned int i = 0; i< tabla_hash[bucket_index].longitud(); i++){
-                hashMapPair* entrada = &(tabla_hash[bucket_index][i]);
-                
-                if( entrada->second >= maximo_local->second){
-                    maximo_local = entrada;
-                }
-            }
-           */  
+        
         bucket_index = progreso->fetch_add(1);
 
     }
 
-   
-
+    //cuando no hay más buckets para revisar, subimos nuestro máximo de ser mayor al global
     puedoUsarElMaximo->lock();
         if(maximo->second < maximo_local->second){
             maximo = maximo_local;
-            //cout<< maximo->first<<endl;
-            //cout<< maximo->second<<endl;
         }
     puedoUsarElMaximo->unlock();
-    //(*vector_maximos)[threadID] = maximo_local;
-    /*sem_post(termine_de_buscar);
-    sem_wait(terminar_busqueda);
-    for(int i : buckets_revisados){
-        sem_post(semaforos_hash[i]);
-    }*/
     
 }
 
@@ -166,7 +134,7 @@ void maximo_desde_thread(int threadID, atomic<int>* progreso, hashMapPair*& maxi
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
     // Completar (Ejercicio 3)
     
-    //vector<hashMapPair*> maximos(cant_threads);
+    //llamamos a threads para que busquen maximos en cada bucket y actualizen "max" como valor maximo global
     hashMapPair* max = new hashMapPair("",0);
     atomic<int> progreso;
     progreso.store(0);
@@ -182,53 +150,17 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cant_threads) {
         
     }
     
-    //hashMapPair max = hashMapPair("",0);
-
-    
     for(unsigned int id = 0; id<cant_threads; id++){
         (threads[id]).join();
-        /*if(max.second <= maximos[id]->second){
-            max = *(maximos[id]);
-        }*/
     }
 
     for(int i = 0; i<cantLetras; i++){
         sem_post(semaforos[i]);
     }
+
     return *max;
             
 }
-
-
-
-
-
-
-/*void maximo_en_segmento(int threadID, int tablaInicio, int tablaFin, Info_Tabla info) {
-                
-    //hashMapPair* maximo_local = &hashMapPair("", 0); no compila
-    hashMapPair* maximo_local = nullptr;
-    int index_tabla = tablaInicio;
-    vector<sem_t*> semaforos_hash = info._sems; //agus: por que todas estas copias?
-    ListaAtomica<hashMapPair>* tabla_hash = (ListaAtomica<hashMapPair>*) info._la_tabla;
-    vector<hashMapPair*> *vector_maximos = info._maximos;
-
-    while(index_tabla < tablaFin){
-        sem_wait(semaforos_hash[index_tabla]);
-            for(unsigned int i = 0; i< tabla_hash[index_tabla].longitud(); i++){
-                hashMapPair* entrada = &(tabla_hash[index_tabla][i]);
-                if(maximo_local == nullptr or  entrada->second >= maximo_local->second){
-                    maximo_local = entrada;
-                }
-            }
-    }
-
-    (*vector_maximos)[threadID] = maximo_local;
-    for(int i = tablaInicio; i< tablaFin; i++){
-        sem_post(semaforos_hash[i]);
-    }
-};*/
-    // podemos hacer varias implementaciones de esto para experimentar
 
 
 #endif
