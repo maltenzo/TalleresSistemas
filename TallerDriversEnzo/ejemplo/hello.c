@@ -34,7 +34,7 @@ static int __init hello_init(void) {
 	cdev_init(&cdev, &fops);
 	//hago cosas
 	if (!alloc_chrdev_region(&major, minor, count, DEVICE_NAME)){
-		return 1 
+		return 1 ;
 	}
 	cdev_add(&cdev, major, count);
 	//creo los nodos del file system o algo asi
