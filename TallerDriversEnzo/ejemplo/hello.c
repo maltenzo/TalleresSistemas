@@ -30,6 +30,7 @@ struct file_operations fops = {
 
 
 static int __init hello_init(void) {
+	printk(KERN_ALERT, "hola\n");
 	//inicializo el cdev
 	cdev_init(&cdev, &fops);
 	//hago cosas
