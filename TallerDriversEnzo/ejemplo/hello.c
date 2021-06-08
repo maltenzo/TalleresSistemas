@@ -34,7 +34,7 @@ static int __init hello_init(void) {
 	cdev_init(&cdev, &fops);
 	//hago cosas
 	if (!alloc_chrdev_region(&major, minor, count, DEVICE_NAME)){
-		printk(KERN_ALERT, "error al reservar memoria");
+		printk(KERN_ALERT, "error al reservar memoria\n");
 	}
 	cdev_add(&cdev, major, count);
 	//creo los nodos del file system o algo asi
