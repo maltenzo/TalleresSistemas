@@ -5,7 +5,7 @@
 #include <linux/fs.h>
 #include <linux/device.h>
 
-static struct cdev cdev;
+static struct cdev* dev;
 
 static struct class* mi_class;
 dev_t  major;
@@ -32,12 +32,12 @@ struct file_operations fops = {
 static int __init hello_init(void) {
 	printk(KERN_ALERT "Hola, Sistemas Operativos!\n");
 	//inicializo el cdev
-	cdev_init(&cdev, &fops);
+	cdev_init(dev, &fops);
 	//hago cosas
 	if (!alloc_chrdev_region(&major, minor, count, DEVICE_NAME)){
 		return 1 ;
 	}
-	cdev_add(&cdev, major, count);
+	cdev_add(dev, major, count);
 	//creo los nodos del file system o algo asi
 	mi_class = class_create(THIS_MODULE, DEVICE_NAME);
 	device_create(mi_class, NULL, major, NULL, DEVICE_NAME);
@@ -52,7 +52,7 @@ static void __exit hello_exit(void) {
 	printk(KERN_ALERT "Adios, mundo cruel...\n");
 	//destruyo todo
 	unregister_chrdev_region(major, count);
-	cdev_del(&cdev);
+	cdev_del(dev);
 	device_destroy(mi_class, major);
 	class_destroy(mi_class);
 	
