@@ -45,7 +45,7 @@ static int __init hello_init(void) {
 }
 
 static void __exit hello_exit(void) {
-	unregister_chrdev_region(&cdev, count);
+	unregister_chrdev_region(major, count);
 	cdev_del(&cdev);
 
 	//destruyo los nodos
