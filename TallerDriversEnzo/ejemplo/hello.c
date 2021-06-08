@@ -34,7 +34,7 @@ static int __init hello_init(void) {
 	cdev_init(&cdev, &fops);
 	//hago cosas
 	alloc_chrdev_region(&major, minor, count, name);
-	cdev_add(cdev, major, count);
+	cdev_add(&cdev, major, count);
 	//creo los nodos del file system o algo asi
 	mi_class = class_create(THIS_MODULE, DEVICE_NAME);
 	device_create(mi_class, NULL, major, NULL, DEVICE_NAME);
