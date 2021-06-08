@@ -30,12 +30,11 @@ struct file_operations fops = {
 
 
 static int __init hello_init(void) {
-	printk(KERN_ALERT, "hola\n");
 	//inicializo el cdev
 	cdev_init(&cdev, &fops);
 	//hago cosas
 	if (!alloc_chrdev_region(&major, minor, count, DEVICE_NAME)){
-		printk(KERN_ALERT, "error al reservar memoria\n");
+		return 1 
 	}
 	cdev_add(&cdev, major, count);
 	//creo los nodos del file system o algo asi
