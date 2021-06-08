@@ -11,7 +11,7 @@ static struct class* my_class
 dev_t  major;
 unsigned int minor = 0;
 unsigned int count = 1;
-char* DEVICE_NAME = "nullDevice";
+char* DEVICE_NAME = "nulo";
 
 ssize_t read(struct file *filp, char __user *data, size_t s, loff_t *off){
 	return NULL;
