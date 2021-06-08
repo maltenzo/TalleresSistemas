@@ -7,7 +7,7 @@
 
 static struct cdev cdev;
 
-static struct class* mi_class
+static struct class* mi_class;
 dev_t  major;
 unsigned int minor = 0;
 unsigned int count = 1;
