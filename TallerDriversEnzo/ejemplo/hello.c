@@ -7,7 +7,7 @@
 
 static struct cdev cdev;
 
-static struct class* my_class
+static struct class* mi_class
 dev_t  major;
 unsigned int minor = 0;
 unsigned int count = 1;
@@ -24,24 +24,9 @@ ssize_t write(struct file *filp, char __user *data, size_t s, loff_t *off){
 struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.read = read,
-	.write =write,
+	.write = write,
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static int __init hello_init(void) {
