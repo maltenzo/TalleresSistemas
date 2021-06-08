@@ -30,6 +30,7 @@ struct file_operations fops = {
 
 
 static int __init hello_init(void) {
+	printk(KERN_ALERT "Hola, Sistemas Operativos!\n");
 	//inicializo el cdev
 	cdev_init(&cdev, &fops);
 	//hago cosas
@@ -40,20 +41,21 @@ static int __init hello_init(void) {
 	//creo los nodos del file system o algo asi
 	mi_class = class_create(THIS_MODULE, DEVICE_NAME);
 	device_create(mi_class, NULL, major, NULL, DEVICE_NAME);
-	printk(KERN_ALERT "Hola, Sistemas Operativos!\n");
+
 
 
 	return 0;
 }
 
 static void __exit hello_exit(void) {
+	
+	printk(KERN_ALERT "Adios, mundo cruel...\n");
+	//destruyo todo
 	unregister_chrdev_region(major, count);
 	cdev_del(&cdev);
-
-	//destruyo los nodos
 	device_destroy(mi_class, major);
 	class_destroy(mi_class);
-	printk(KERN_ALERT "Adios, mundo cruel...\n");
+	
 }
 
 
