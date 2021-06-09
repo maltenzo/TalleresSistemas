@@ -29,39 +29,39 @@ struct file_operations fops = {
 };
 
 
-static int __init hello_init(void) {
+static int __init nulo_init(void) {
 	printk(KERN_ALERT "Hola, Sistemas Operativos!\n");
 	//inicializo el cdev
 	cdev_init(dev, &fops);
 	//hago cosas
-	if (!alloc_chrdev_region(&major, minor, count, DEVICE_NAME)){
+	if (!alloc_chrdev_region(&major, 0, count, "nulo")){
 		return 1 ;
 	}
 	cdev_add(dev, major, count);
 	//creo los nodos del file system o algo asi
-	mi_class = class_create(THIS_MODULE, DEVICE_NAME);
-	device_create(mi_class, NULL, major, NULL, DEVICE_NAME);
+	mi_class = class_create(THIS_MODULE, "nulo");
+	device_create(mi_class, NULL, major, NULL, "nulo");
 
 
 
 	return 0;
 }
 
-static void __exit hello_exit(void) {
+static void __exit nulo_exit(void) {
 	
 	printk(KERN_ALERT "Adios, mundo cruel...\n");
 	//destruyo todo
-	unregister_chrdev_region(major, count);
-	cdev_del(dev);
+	
 	device_destroy(mi_class, major);
 	class_destroy(mi_class);
-	
+	unregister_chrdev_region(major, count);
+	cdev_del(dev);
 }
 
 
 
-module_init(hello_init);
-module_exit(hello_exit);
+module_init(nulo_init);
+module_exit(nulo_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("La banda de SO");
