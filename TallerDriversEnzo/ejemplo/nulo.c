@@ -54,8 +54,9 @@ static void __exit nulo_exit(void) {
 	
 	device_destroy(mi_class, major);
 	class_destroy(mi_class);
-	unregister_chrdev_region(major, count);
 	cdev_del(dev);
+	unregister_chrdev_region(major, count);
+	
 }
 
 
