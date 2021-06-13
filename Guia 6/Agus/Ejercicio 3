@@ -1,5 +1,5 @@
-a) No se.
-b) Al ser un proceso más que debe correr, empeora la latencia general y ahce busy waiting (?). Pero mejora el tiempo de ejecución de los procesos que envían
+a) No se.(?)
+b) Al ser un proceso más que debe correr, empeora la latencia general y hace busy waiting (?). Pero mejora el tiempo de ejecución de los procesos que envían
  la orden de salida ya que evita que éstos esperen a que se libere el recurso para poder continuar.
 c) Supongo que porque de la placa de red se espera que llegue información necesaria para continuar la ejecución, con lo que realizar spooling, no evitaria que el
 proceso principal deba esperar. (?)

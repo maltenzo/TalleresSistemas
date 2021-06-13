@@ -4,7 +4,7 @@ semaforo listo;
 
 int driver_init(){
 
-    listo = semaforo_create(0);
+    listo = semaforo_create(1);
 
     return 0;
 }
@@ -15,6 +15,7 @@ int driver_write(int sector, int *data){
 
     if(IN(DOR_STATUS) == 0) {
         OUT(DOR_IO, 1);
+        while(IN(DOR_STATUS) != 1){}
         sleep(50);
     }
 
@@ -40,6 +41,13 @@ int driver_write(int sector, int *data){
     return 0;
 }
 
+int driver_remove(){
+    
+    listo.delete();
+
+    return 0;
+}
+
 
 
 b)
@@ -53,11 +61,9 @@ atomic<int> time_request;
 
 int driver_init(){
 
-    listo = semaforo_create(0);
+    listo = semaforo_create(1);
 
     continuar = semaforo_create(0);
-
-    timer = 0;
 
     request_irq(6, handler_1);
 
@@ -87,8 +93,11 @@ int driver_write(int sector, int *data){
 
     listo.wait();
 
+    void *datos = copy_from_user(data);
+
     if(IN(DOR_STATUS) == 0) {
         OUT(DOR_IO, 1);
+        while(IN(DOR_STATUS) != 1){}
         time_request.getAndAdd(2);
         continuar.wait();
     }
@@ -103,7 +112,7 @@ int driver_write(int sector, int *data){
 
     OUT(SEEK_SECTOR, sector_real);
 
-    escribir_datos(data);
+    escribir_datos(datos);
 
     continuar.wait();
 
@@ -118,6 +127,9 @@ int driver_write(int sector, int *data){
 
 
 int driver_remove(){
+
+    listo.delete();
+    continuar.delete();
 
     free_irq(6);
     free_irq(7);

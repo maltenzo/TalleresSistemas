@@ -26,6 +26,8 @@ int driver_write(int *data){
 
 int driver_remove(){
 
+    pressed.delete();
+
     return free_irq(7);
 }
 
