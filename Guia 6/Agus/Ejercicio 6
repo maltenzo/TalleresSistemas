@@ -1,0 +1,18 @@
+
+int driver_read(int *data){
+
+    int tiempo = IN(CHRONO_CURRENT_TIME);
+
+    *data = tiempo;
+
+    return 0;
+
+}
+
+int driver_write(int *data){
+
+    OUT(CHRONO_CTRL, CHREONO_RESET);
+
+    return 0;
+
+}

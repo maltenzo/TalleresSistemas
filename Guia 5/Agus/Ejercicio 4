@@ -1,0 +1,18 @@
+16 GB espacio
+1 KB por sector
+
+1024*1024*16 = 16.777.216 sectores
+
+a) 8.388.608 bloques
+
+   16.777.216 identificadores de bloque de 24 bits cada uno, ocupando 48 Mb. Entonces la FAT ocupa 96 Mb?
+
+   65.536 hashes distintos de 16 bits cada uno, ocupando 128 Kb. (Tamaño de la tabla de archivos)
+
+   Quedan 16.678.784 Kb de espacio para archivos
+
+b) Tomaría un tamaño de hash de 24 bits, un tamaño de identificador de 24 bits y un tamaño de bloque de 2 sectores. De este modo habría un hash por bloque de 2 Kb
+ya que en cada uno entraría un archivo. 24 bits y no 32 porque el tamaño del disco no da para abastecer direcciones mas ala de los 24 bits, sería un desperdicio.
+
+c) Con un tamaño de bloque de 8 sectores, cada archivo ocuparía 2048 bloques. A lo sumo entrarían 1024 archivos en disco. Para hashearlos se necesitarian 1024 entradas en el hash y 
+con 8 bits no alcanza asi que 16. 2.097.152 bloques en total, 24 bits necesarios para identificarlos.

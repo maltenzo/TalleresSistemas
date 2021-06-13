@@ -1,0 +1,2 @@
+Dados dos bloques que se quieren leer, con RAID 0 cabe la posibilidad de que ambos estén en el mismo disco, mientras que con RAID 1 cualquier par de bloques puede leerse en paralelo
+ya que ambos discos tienen copias de todos los bloques.

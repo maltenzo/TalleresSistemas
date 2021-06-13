@@ -1,0 +1,3 @@
+a, c y e. Es una pieza de software que se acopla la SO, se encarga de gestionar las interrupciones y órdenes que se desean transmitir a los distintos dispositivos de entrada/salida,
+tiene conocimiento tanto del SO como del dispositivo específico al que controla, aunque hay drivers que sirven para más de un modelo de dispositivo. Esto es así ya que se encargan de
+traducir comandos de una API que proveen al lenguaje del dispositivo.

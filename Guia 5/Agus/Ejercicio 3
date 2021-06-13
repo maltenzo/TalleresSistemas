@@ -1,0 +1,8 @@
+1. Para poder tener enlaces simbolicos es necesario tener un sistema basado en inodos, ya que así se crea un inodo para el enlace simbólico que apunta al enlace real.
+
+2. Con un sistema basado en inodos es posible acotar la cantidad de sectores utilizados para estructuras auxiliares acotando la cantidad de inodos y tablas indirectas. 
+Con un sistema FAT esto sería imposible ya que la tabla es mas grande conforme el disco es más grande.
+
+3. En este caso es necesario un sistema FAT, ya que si bien los inodos soportan un tamaño de archivo muy grande, está limitado por la cantidad de direcciones indirectas que pueda tener.
+
+4. Inodos.

@@ -1,0 +1,42 @@
+semaforo pressed;
+
+int driver_init(){
+    
+    pressed = semaforo_create(0);
+    return request_irq(7, handler);
+}
+
+void handler() {
+    pressed.signal();
+    
+}
+
+int driver_read(int *data){
+
+    pressed.wait();
+
+    return BTN_PRESSED;
+}
+
+int driver_write(int *data){
+
+    OUT(BTN_STATUS, BTN_INT); 
+    return 0;
+}
+
+int driver_remove(){
+
+    return free_irq(7);
+}
+
+int driver_open(){
+
+
+    return 0;
+}
+
+int driver_close(){
+
+
+    return 0;
+}
