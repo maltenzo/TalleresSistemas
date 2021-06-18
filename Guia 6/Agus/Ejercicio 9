@@ -1,1 +1,3 @@
-?
+a) se fija si existe el driver y llama al open del driver con todos los parametros necesarios a los que el usuario no accede.
+
+b) parecido al anterior.
