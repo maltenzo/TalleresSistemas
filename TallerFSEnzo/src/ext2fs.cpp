@@ -280,13 +280,95 @@ struct Ext2FSInode * Ext2FS::load_inode(unsigned int inode_number)
 {
 	//TODO: Ejercicio 2
 
+	//conseguir el  bloque del inodo
+	Ext2FSSuperblock* superBloque = superblock();
+	unsigned int block_size = 1024 << superBloque->log_block_size;
+	int inodes_per_block = block_size / superBloque->inode_size;
+	Ext2FSInode buffer[inodes_per_block];
+
+
+	unsigned int grupoInodo = blockgroup_for_inode(inode_number);
+	unsigned int indiceInodo = blockgroup_inode_index(inode_number);
+
+
+	Ext2FSBlockGroupDescriptor* descriptorGrupo = block_group(grupoInodo);
+	unsigned int tablaNodos = descriptorGrupo->inode_table;
+	unsigned int block_number = tablaNodos + indiceInodo/inodes_per_block;
+
+	//cargar inodo
+	read_block(block_number, (unsigned char *) buffer);
+
+
+	//devolver la posicion del inodo
+	Ext2FSInode* inodo = new Ext2FSInode();
+	*inodo = buffer[indiceInodo%inodes_per_block];
+	return inodo;
 }
+
 
 unsigned int Ext2FS::get_block_address(struct Ext2FSInode * inode, unsigned int block_number)
 {
+		unsigned int res = 0;
+	
+		Ext2FSInode buffer[superblock()->inode_size];
 
-	//TODO: Ejercicio 1
+		Ext2FSInode * primerIndirecto  = new Ext2FSInode();
+		Ext2FSInode * segundoIndirecto = new Ext2FSInode();
+		Ext2FSInode * tercerIndirecto  = new Ext2FSInode();
 
+		
+
+		read_block(inode->block[12], (unsigned char *) buffer);
+		*primerIndirecto = buffer[0];
+
+		read_block(inode->block[13], (unsigned char *) buffer);
+		*segundoIndirecto = buffer[0];
+
+		read_block(inode->block[14], (unsigned char *) buffer);
+		*tercerIndirecto = buffer[0];
+		
+
+		unsigned int bloquesEnPrimerIndirecto =  primerIndirecto->blocks ;
+		unsigned int bloquesEnSegundoIndirecto =  bloquesEnPrimerIndirecto * segundoIndirecto->blocks;
+		
+
+		if (block_number < 12){
+			res = inode->block[block_number];
+
+		}else if(block_number < 12+primerIndirecto->blocks){
+			block_number -= 12;
+			res = primerIndirecto->block[block_number];
+			
+		}else if(block_number < 12 + bloquesEnPrimerIndirecto + bloquesEnSegundoIndirecto ){
+			unsigned int index = block_number/bloquesEnPrimerIndirecto;
+			unsigned int bloque = block_number % bloquesEnPrimerIndirecto;
+			Ext2FSInode * primerIndirectointerno  = new Ext2FSInode();
+			read_block(segundoIndirecto->block[index], (unsigned char *) buffer);
+			*primerIndirectointerno = buffer[0];
+			res = primerIndirectointerno->block[bloque];
+			
+
+
+
+		}else if(block_number > 12 + bloquesEnPrimerIndirecto + bloquesEnSegundoIndirecto ){
+				unsigned int index = block_number/bloquesEnSegundoIndirecto;
+				unsigned int bloque = block_number % bloquesEnSegundoIndirecto;
+
+				Ext2FSInode * segundoIndirectointerno  = new Ext2FSInode();
+				read_block(tercerIndirecto->block[index], (unsigned char *) buffer);
+				*segundoIndirectointerno = buffer[0];
+
+				index = block_number/bloquesEnPrimerIndirecto;
+				bloque = block_number % bloquesEnPrimerIndirecto;
+				Ext2FSInode * primerIndirectointerno  = new Ext2FSInode();
+				read_block(segundoIndirectointerno->block[index], (unsigned char *) buffer);
+				*primerIndirectointerno = buffer[0];
+				res = primerIndirectointerno->block[bloque];
+		}
+
+
+
+		return res;
 }
 
 void Ext2FS::read_block(unsigned int block_address, unsigned char * buffer)
@@ -299,13 +381,49 @@ void Ext2FS::read_block(unsigned int block_address, unsigned char * buffer)
 
 struct Ext2FSInode * Ext2FS::get_file_inode_from_dir_inode(struct Ext2FSInode * from, const char * filename)
 {
+	
 	if(from == NULL)
 		from = load_inode(EXT2_RDIR_INODE_NUMBER);
 	//std::cerr << *from << std::endl;
 	assert(INODE_ISDIR(from));
+	//los dir entry el record length
+	//tener cuidado que el ultimo dir entry puede quedar partido
+	
 
+	unsigned int block_size = 1024 << superblock()->log_block_size;
+	unsigned char * bloque1;
+	Ext2FSDirEntry bloque2[block_size];
+	bool found = false;
+	read_block(from->block[0], (unsigned char *) bloque1);
+	
+	Ext2FSDirEntry* dirEntry = new Ext2FSDirEntry();
+	*dirEntry = *(Ext2FSDirEntry*) bloque1;
+	std::cout<<"hola"<<std::endl;
+	unsigned char finalDirEntry[dirEntry->record_length] ;
+	*finalDirEntry = *bloque1;
+	//unsigned int offset = sizeof(dirEntry->inode)+sizeof(dirEntry->record_length)+sizeof(dirEntry->name_length)+sizeof(dirEntry->file_type);
+	//char  name[dirEntry->name_length];
+	//*name = bloque1[offset];
+	std::cout<<filename<<std::endl;
+	std::cout<<((Ext2FSDirEntry*)finalDirEntry)->name<<std::endl;
+
+
+	/*
 	//TODO: Ejercicio 3
-
+	
+	for (unsigned int i = 0; i < from->blocks; i+=2)
+	{
+		//leo un bloque de dir entrys
+		read_block(from->block[i], (unsigned char*)bloque1);
+		Ext2FSDirEntry* entry = *buffer;
+			printf(entry->name);
+			if(entry->name == filename){
+				return load_inode(entry->inode);
+			}
+		
+	}*/
+	
+	return load_inode(13999);
 }
 
 fd_t Ext2FS::get_free_fd()

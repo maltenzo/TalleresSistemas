@@ -65,10 +65,12 @@ void test_get_block_address(Ext2FS * fs){
 }
 
 void test_get_file_inode_from_dir_inode(Ext2FS * fs){
+	cout << "=== Test Read File ===" << endl;  
     unsigned char caracteres[9];
 	fd_t fileDesc = fs->open("/grupos/g1/nota.txt", "cualquiera");
 	fs->seek(fileDesc,13999);
 	fs->read(fileDesc,caracteres,8);
+
 	caracteres[8]=0;
 
   if (caracteres[7]==1) {
@@ -97,6 +99,7 @@ int main(int argc, char ** argv)
     test_load_inode(fs);
     test_get_block_address(fs);
     test_get_file_inode_from_dir_inode(fs);
+	cout<<"Muy bien pasaste todos los test, un capo"<<endl;
     
 	return 0;
 }
