@@ -1,0 +1,5 @@
+a) too much, discutir con alguno de los pi
+b) Si no me equivoco, si la entrada del usuario es de 64 caracteres y los primeros 32 caracteres
+son iguales a los segundos 32, entonces puede sobreescribirse realpass con estos ultimos 32 caracteres,
+esto es así ya que fgets() lee hasta sizeof(user) en vez de hasta sizeof(user.pass), permitiendo una entrada
+de 64 caracteres.

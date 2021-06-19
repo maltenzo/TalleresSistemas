@@ -1,0 +1,2 @@
+No ya que ahora pueden caerse nodos en el envío de la confirmación (generales bizantinos),
+habría que implementar un algoritmo de consenso tipo locks distribuidos.

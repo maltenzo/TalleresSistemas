@@ -1,0 +1,5 @@
+a) No, porque basta con interceptar el hash y luego enviarlo, no hace falta conocer la contraseña.
+b) Supongo que si, teniendo el seed y el hash puede probar contraseñas hasta que alguna de, pero aun así
+si llega a encontrar una contraseña que casualmente con ese seed tenía el mismo hash pero no es la que se busca,
+al querer utilizarla con el servidor, este mandaria otra seed y muy probablemente el hash resultante sea distinto
+al de la contraseña original.
