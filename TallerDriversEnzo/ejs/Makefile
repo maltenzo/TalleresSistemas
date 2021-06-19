@@ -1,4 +1,4 @@
-obj-m := nulo.o
+obj-m := random.o
 KVERSION := $(shell uname -r)
 
 all:
