@@ -1,0 +1,2 @@
+nivel 0 (kernel)
+Para evitar que el usuario escriba codigo específico de dispositivo y dejar el manejo al driver de manera exclusiva.

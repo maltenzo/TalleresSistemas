@@ -1,0 +1,3 @@
+a) Si, si está implementado en el dispositivo mismo.
+b) Mejora siempre y cuando el proceso no deba esperar respuesta del dispositivo.
+c) En las placas de red es importante conocer el momento exacto en que el envio de datos se realizo, el spooler miente acerca de la respuesta del dispositivo real.

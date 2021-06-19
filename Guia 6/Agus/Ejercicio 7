@@ -1,0 +1,36 @@
+int driver_init(){
+
+
+    return 0;
+}
+
+int driver_open(){
+
+
+    return 0;
+}
+
+int driver_close(){
+
+
+    return 0;
+}
+
+int driver_read(int *data){
+
+    while (IN(BTN_STATUS_0) != 1){}
+
+    return BTN_PRESSED;
+}
+
+int driver_write(int *data){
+
+    OUT(BTN_STATUS_1, 0); 
+    return 0;
+}
+
+int driver_remove(){
+
+
+    return 0;
+}
