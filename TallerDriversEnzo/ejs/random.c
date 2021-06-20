@@ -6,7 +6,7 @@
 #include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
-
+#include <linux/random.h>
 
 static struct cdev dev;
 
@@ -20,13 +20,13 @@ ssize_t read(struct file *filp, char __user *data, size_t s, loff_t *off){
 	if(!numeroUsuario){
 		-EPERM;
 	}
-	int* random  = kmalloc(12);
-	char * res = kmalloc(16);
+	int* random  = kmalloc(12, GFP_KERNEL);
+	char * res = kmalloc(16, GFP_KERNEL);
 	get_random_bytes(random, 15);
-	*random = *random % maximo;
+	*random = *random % *numeroUsuario;
 
 
-	snprintf(res, 15, "%u\n", *num_random);
+	snprintf(res, 15, "%u\n", *random);
 	copy_to_user(data, res, sizeof(res));
 	
 	kfree(random);
@@ -53,9 +53,6 @@ ssize_t write(struct file *filp, char __user *data, size_t s, loff_t *off){
 	return s;
 }
 
-int randomizar(){
-
-}
 
 struct file_operations fops = {
 	.owner = THIS_MODULE,
@@ -70,9 +67,7 @@ static int __init random_init(void) {
 	//inicializo el cdev
 	cdev_init(&dev, &fops);
 	//hago cosas
-	if (!alloc_chrdev_region(&major, 0, count, "azar")){
-		return 1 ;
-	}
+	alloc_chrdev_region(&major, 0, count, "azar");
 	cdev_add(&dev, major, count);
 	//creo los nodos del file system o algo asi
 	mi_class = class_create(THIS_MODULE, "azar");
@@ -88,6 +83,10 @@ static void __exit random_exit(void) {
 	printk(KERN_ALERT "Adios, mundo cruel...\n");
 	//destruyo todo
 	
+	if(!numeroUsuario){
+		kfree(numeroUsuario);
+	}
+
 	device_destroy(mi_class, major);
 	class_destroy(mi_class);
 
