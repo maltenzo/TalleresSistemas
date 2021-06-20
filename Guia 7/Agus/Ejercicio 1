@@ -1,0 +1,5 @@
+a) Utiliza la función de hash sobre el input del usuario y verifica que l resultado sea el mismo al almacenado.
+b) Si están bien distribuidos, dado un valor de hash, la probabilidad de que una contraseña se traduzca en ese valor
+es de 1/2^64.
+c) da igual
+d) Son 37^6 claves posibles, el tiempo seria menor al anterior.

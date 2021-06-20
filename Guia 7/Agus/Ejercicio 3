@@ -1,0 +1,7 @@
+El problema de seguridad se encuentra en el gets(nombre), esta función lee la entrada estandar
+hasta llegar a un salto de línea o el final del archivo, con lo que si se ingresa un texto de mas de 80
+caracteres, lo seguirá leyendo y tratando de escribir en el stack una vez superado el tamaño de nombre,
+pudiendo así sobreescribirse la direccion de retorno del programa. El printf no presenta un peligro ya que 
+al utilizar el formato %s tomará a nombre como una tira de caracteres y no como algo ejecutable.
+
+Mas que esto no se me ocurre.
