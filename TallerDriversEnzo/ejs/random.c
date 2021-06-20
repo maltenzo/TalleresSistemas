@@ -15,7 +15,7 @@ dev_t  major;
 unsigned int minor = 0;
 unsigned int count = 1;
 char* DEVICE_NAME = "";
-int* numeroUsuario ;
+int* numeroUsuario = NULL;
 ssize_t read(struct file *filp, char __user *data, size_t s, loff_t *off){
 	if(!numeroUsuario){
 		-EPERM;
