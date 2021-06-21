@@ -34,9 +34,7 @@ static int __init nulo_init(void) {
 	//inicializo el cdev
 	cdev_init(&dev, &fops);
 	//hago cosas
-	if (!alloc_chrdev_region(&major, 0, count, "nulo")){
-		return 1 ;
-	}
+	alloc_chrdev_region(&major, 0, count, "nulo");
 	cdev_add(&dev, major, count);
 	//creo los nodos del file system o algo asi
 	mi_class = class_create(THIS_MODULE, "nulo");
