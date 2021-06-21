@@ -1,1 +1,2 @@
-Paralelo, escencialmente se está trabajando con una gran memoria compartida, solo que está físicamente separada.
+Si el clock está sincronizado, Paralelo, ya que escencialmente se está trabajando con una gran memoria compartida, solo que está físicamente separada.
+Sino distribuido.

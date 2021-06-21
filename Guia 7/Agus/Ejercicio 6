@@ -1,3 +1,2 @@
-a) Si no me equivoco se podria ingresar un cero negativo, es decir, todos ceros pero el bit de signo en 1
-y ahí no entras en ningun if proque el cero contra el que se compara es positivo.
-b) No, podría devolverse un 0, si el ultimo return fuese un 2 sí.
+a) Se puede usar un SNAN.
+b) No.

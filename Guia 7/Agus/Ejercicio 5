@@ -1,4 +1,4 @@
 a) SETUID.
-b)Puede modificar realpass y salt?
-c) Si ser refiere al caso en que cualquier otra persona puede venir y entrar 
-a la pc sin ser el usuario riginal, entonces si.
+b) Se tiene control sobre la pila, por debajo de pass (direccion de retorno).
+c) Si se refiere al caso en que cualquier otra persona puede venir y entrar 
+a la pc sin ser el usuario original, entonces si.

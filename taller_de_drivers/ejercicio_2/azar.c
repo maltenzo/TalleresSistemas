@@ -35,42 +35,36 @@ static int count = 1;
 unsigned int maximo = 0;
 static struct class* mi_class;
 
-ssize_t lectura(struct file* filp, char __user* data, size_t s, loff_t* off){
-	unsigned int* num_random = kmalloc(sizeof(unsigned int), GFP_KERNEL);
+static ssize_t lectura(struct file* filp, char __user* data, size_t size, loff_t* off){
+	unsigned int num_random;
+	get_random_bytes(&num_random, sizeof(unsigned int));
+	num_random = num_random % maximo;
 
-	get_random_bytes(num_random, sizeof(unsigned int));
-	*num_random = *num_random % maximo;
+	char* buffer_res = kmalloc(size, GFP_KERNEL);
 
-	int max_digit_count = 10;
-
-	char* resultado = kmalloc(max_digit_count + 1, GFP_KERNEL);
-
-	int error = snprintf(resultado, max_digit_count + 2, "%u\n", *num_random); 
-	if(error < 0 || error > max_digit_count + 1){
+	int effective_size = snprintf(buffer_res, size, "%u\n", num_random); 
+	if(effective_size < 0 || effective_size > size){
 		return -EPERM;
 	}
 	
+	copy_to_user(data, buffer_res, size);
 
-	*data = copy_to_user(data, resultado, max_digit_count + 1);
-
-
-	kfree(num_random);
-	kfree(resultado);
-	return 0;
+	kfree(buffer_res);
+	return  effective_size;
 }
 
-ssize_t escritura(struct file* filp, const char __user* data, size_t s, loff_t* off){
-	char* datos = kmalloc(s+1, GFP_KERNEL);
-	copy_from_user(datos, data, s);
-	datos[s] = '\0';
-	if(kstrtoint(datos, 0, &maximo) != 0){
+static ssize_t escritura(struct file* filp, const char __user* data, size_t size, loff_t* off){
+	char* datos = kmalloc(size+1, GFP_KERNEL);
+	copy_from_user(datos, data, size);
+	datos[size] = '\0';
+	if(kstrtoint(datos, 0, &maximo) != 0 || maximo < 0){
 		kfree(datos);
 		return -EPERM;
 	}
 
 	kfree(datos);
 
-	return 0;
+	return size;
 }
 
 /*ssize_t abrir(struct inode* inodo, struct file* fl){
@@ -84,13 +78,13 @@ ssize_t liberar(struct inode* inodo, struct file* fl){
 static struct file_operations fops = {
 .owner = THIS_MODULE,
 .read = lectura,
-.write = escritura
+.write = escritura,
 /*.open = abrir,
 .release = liberar,*/
 };
 
 
-static int __init hello_init(void) {
+static int __init azar_init(void) {
 	printk(KERN_ALERT "Hola, Sistemas Operativos!\n");
 
 	//static struct file_operations* fops;
@@ -100,19 +94,19 @@ static int __init hello_init(void) {
 
 	cdev_add(&cdev, major, count);
 
-	mi_class = class_create(THIS_MODULE, "azar");
-	device_create(mi_class, NULL, major, NULL, "azar");
+	azar_class = class_create(THIS_MODULE, "azar");
+	device_create(azar_class, NULL, major, NULL, "azar");
 
 
 	return 0;
 }
 
-static void __exit hello_exit(void) {
+static void __exit azar_exit(void) {
 	printk(KERN_ALERT "Adios, mundo cruel...\n");
 
 	
-	device_destroy(mi_class, major);
-	class_destroy(mi_class);
+	device_destroy(azar_class, major);
+	class_destroy(azar_class);
 	unregister_chrdev_region(major, count);
 	cdev_del(&cdev);
 }
@@ -121,9 +115,9 @@ static void __exit hello_exit(void) {
 
 
 
-module_init(hello_init);
-module_exit(hello_exit);
+module_init(azar_init);
+module_exit(azar_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("La banda de SO");
-MODULE_DESCRIPTION("Una suerte de 'Hola, mundo'");
+MODULE_DESCRIPTION("Generador de numeros al azar");

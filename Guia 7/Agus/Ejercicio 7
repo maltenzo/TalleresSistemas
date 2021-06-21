@@ -1,5 +1,5 @@
 a) Tanto el buffer como la direccion de retorno estarian en esta posicion randomizada del stack, por lo que su posicion relativa seria
 siempre la misma, este ataque no se ve afectado.
-b) Creo que acá se complica porque si bien podés tener el valor de retorno a otro programa, no sabrías donde está su stack.
+b) Lo mismo que el a?
 c) Creo que no se ve afectada ya que no habría que cambiar de stack, ya se tiene la posicion del stack anterior y solo hace falta cambiar
 el ret a la posicion de la syscall.
